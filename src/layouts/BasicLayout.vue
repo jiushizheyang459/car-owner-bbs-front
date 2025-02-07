@@ -32,6 +32,7 @@
 
   .content {
     padding: 20px;
+    margin-bottom: 20px;
     //background: linear-gradient(to right, #fefefe, #fff);
     background: #f9f9f9;
   }

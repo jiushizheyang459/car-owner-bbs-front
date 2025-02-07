@@ -1,11 +1,11 @@
 <template>
   <div class="article-all">
     <ul>
-      <li v-for="item in list" :key="item.id">
+      <li v-for="item in articleList" :key="item.id">
         <div @click="openDetail(item)">
           <div class="article-header">
-            <img :src="item.img" alt="" />
-            <span>{{ item.name }}</span>
+            <img :src="item.avatar" alt="" />
+            <span>{{ item.nickName }}</span>
           </div>
           <h2 class="article-title">{{ item.title }}</h2>
           <div class="article-content">
@@ -20,11 +20,11 @@
                   :src="item.favourFlag ? 'src/assets/icon/点赞.svg' : 'src/assets/icon/favour.svg'"
                   class="action-icon"
                 />
-                <span :class="item.favourFlag ? 'favourNum' : ''">{{ item.favour }}</span>
+                <span :class="item.favourFlag ? 'favourNum' : ''">{{ item.favourCount }}</span>
               </li>
               <li>
                 <img src="@/assets/icon/comment.svg" />
-                {{ item.comment }}
+                {{ item.commentCount }}
               </li>
               <li>
                 <img src="@/assets/icon/view.svg" />
@@ -48,58 +48,56 @@
         </div>
       </li>
     </ul>
+    <div class="pagination">
+      <el-pagination
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :page-sizes="[5, 10, 20]"
+        layout="sizes, prev, pager, next, total"
+        :total="articleTotalCount"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import useArticleStore from '@/store/article/article.ts'
+import { storeToRefs } from 'pinia'
 
-const list = ref([
-  {
-    img: 'src/assets/avatar/beibei.png',
-    name: '歹毒贝贝',
-    title: '建议周志敏把杨清逸打一顿',
-    content:
-      '近日，周志敏和杨清逸骂涨，周志敏一怒之下，把贝贝的笔洗摔了。著名教育家，画家，知名穿搭博主、美妆博主，小红书资深用户，微博SVIP会员贝贝女士建议两个人出门都被半挂创死，这样一来杨清逸就再也不敢这么嚣张了',
-    id: '1',
-    favourFlag: false,
-    favour: 88,
-    comment: 10,
-    viewCount: 10,
-    saveFlag: false
-  },
-  {
-    img: 'src/assets/avatar/beibei.png',
-    name: '邪恶贝贝',
-    title: '贝贝是不是个臭猪娃？',
-    content:
-      '就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。就是带，不听话的娃娃是坏娃娃。',
-    id: '2',
-    favourFlag: false,
-    favour: 88,
-    comment: 11,
-    viewCount: 10,
-    saveFlag: false
-  },
-  {
-    img: 'src/assets/avatar/beibei.png',
-    name: '猪贝st',
-    title: '买特斯拉还是奔驰？',
-    content:
-      '买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。买特斯拉还是奔驰，这是贝贝经常考虑的问题。',
-    id: '3',
-    favourFlag: false,
-    favour: 88,
-    comment: 12,
-    viewCount: 10,
-    saveFlag: false
-  }
-])
+//region 分页部分
+const currentPage = ref(1)
+const pageSize = ref(5)
 
+function handleSizeChange() {
+  fetchArticleListData()
+}
+function handleCurrentChange() {
+  fetchArticleListData()
+}
+
+function fetchArticleListData() {
+  const size = pageSize.value
+  const pageNum = currentPage.value
+  const info = { size, pageNum }
+  articleStore.getAllArticleListAction(info)
+}
+//endregion
+
+//region 查询数据请求
+const articleStore = useArticleStore()
+
+fetchArticleListData()
+const { articleList, articleTotalCount } = storeToRefs(articleStore)
+//endregion
+
+//region 路由部分
 const toggleFavour = (item: any) => {
   item.favourFlag = !item.favourFlag
-  item.favour = item.favour === 88 ? item.favour + 1 : item.favour - 1
+  item.favourCount = item.favourCount === 10 ? item.favourCount + 1 : item.favourCount - 1
 }
 
 const toggleSave = (item: any) => {
@@ -110,6 +108,7 @@ const router = useRouter()
 function openDetail(item: any) {
   router.push('/article/detail')
 }
+//endregion
 </script>
 
 <style scoped lang="less">
@@ -222,5 +221,10 @@ function openDetail(item: any) {
 .article-actions li:hover .action-icon {
   transform: scale(1.1); /* 图片放大 */
   opacity: 0.7; /* 图片透明度变化 */
+}
+
+.pagination {
+  margin-left: 20px;
+  margin-bottom: 20px;
 }
 </style>

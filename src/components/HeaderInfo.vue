@@ -54,7 +54,7 @@ import {
   Search,
   Unlock
 } from '@element-plus/icons-vue'
-import { accountLogoutRequest } from '@/service/logout/logout.ts'
+import { accountLogoutRequest } from '@/service/login/logout.ts'
 import { localCache } from '@/utils/cache.ts'
 import router from '@/router'
 import { LOGIN_TOKEN } from '@/global/constants.ts'

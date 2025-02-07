@@ -48,7 +48,7 @@
                 <div class="follows-head">{{ follow.name }}</div>
                 <div class="follows-detail">你可能感兴趣</div>
               </div>
-              <el-button class="follows-button" type="text" @click="handleFollow(follow.name)">
+              <el-button class="follows-button" type="text">
                 <img src="@/assets/icon/add.svg" alt="" />
                 <span>关注</span>
               </el-button>

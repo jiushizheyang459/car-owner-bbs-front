@@ -2,6 +2,7 @@
   <div class="content">
     <ContentLeft />
     <ContentRight />
+    <el-backtop :right="100" :bottom="100" />
   </div>
 </template>
 
