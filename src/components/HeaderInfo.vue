@@ -15,7 +15,7 @@
     <div class="info">
       <el-dropdown>
         <span class="user-info">
-          <el-avatar :size="30">user</el-avatar>
+          <el-avatar :size="30" src="src/assets/avatar/relx5.jpeg"></el-avatar>
           <span class="name">leeway</span>
         </span>
         <template #dropdown>

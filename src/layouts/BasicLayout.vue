@@ -8,7 +8,9 @@
         <router-view />
       </el-main>
       <el-footer class="footer">
-        <a href="https://www.baidu.com" target="_blank">by leeway｜关于作者｜联系方式</a>
+        <a href="https://github.com/jiushizheyang459?tab=repositories" target="_blank"
+          >by leeway｜关于作者｜联系方式</a
+        >
       </el-footer>
     </el-container>
   </div>
@@ -27,15 +29,16 @@
     right: 0;
     padding: 16px;
   }
+
   .content {
     padding: 20px;
-    margin-bottom: 20px;
     //background: linear-gradient(to right, #fefefe, #fff);
     background: #f9f9f9;
   }
+
   .header {
     background: white;
-    margin-bottom: 16px;
+    margin-bottom: 10px;
     color: unset;
   }
 }
