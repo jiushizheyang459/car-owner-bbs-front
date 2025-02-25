@@ -40,6 +40,7 @@ declare module 'vue' {
     ElSubMenu: typeof import('element-plus/es')['ElSubMenu']
     ElTabPane: typeof import('element-plus/es')['ElTabPane']
     ElTabs: typeof import('element-plus/es')['ElTabs']
+    ElText: typeof import('element-plus/es')['ElText']
     ElTooltip: typeof import('element-plus/es')['ElTooltip']
     GlobalHeader: typeof import('./src/components/GlobalHeader.vue')['default']
     HeaderInfo: typeof import('./src/components/HeaderInfo.vue')['default']

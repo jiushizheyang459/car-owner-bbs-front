@@ -15,6 +15,7 @@ import ContentFooter from '@/views/index/components/ContentFooter.vue'
 <style scoped lang="less">
 .content {
   display: flex;
+  flex-direction: column;
   width: 1000px;
   margin: 0 auto;
 }

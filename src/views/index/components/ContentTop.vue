@@ -1,5 +1,5 @@
 <template>
-  <div class="content-container">
+  <div id="content-top">
     <el-card class="right-card">
       <el-carousel height="340px">
         <el-carousel-item v-for="item in 4" :key="item">
@@ -61,7 +61,7 @@ const messageList = [
 </script>
 
 <style scoped lang="less">
-.content-container {
+#content-top {
   display: flex;
   align-items: stretch;
 
