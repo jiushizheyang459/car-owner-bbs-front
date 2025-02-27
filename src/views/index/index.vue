@@ -7,9 +7,9 @@
 </template>
 
 <script setup lang="ts">
-import ContentTop from '@/views/index/components/ContentTop.vue'
-import ContentBody from '@/views/index/components/ContentBody.vue'
-import ContentFooter from '@/views/index/components/ContentFooter.vue'
+import ContentTop from '@/views/index/components/contentTop.vue'
+import ContentBody from '@/views/index/components/contentBody.vue'
+import ContentFooter from '@/views/index/components/contentFooter.vue'
 </script>
 
 <style scoped lang="less">
