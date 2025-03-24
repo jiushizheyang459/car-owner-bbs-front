@@ -51,6 +51,12 @@ const router = createRouter({
             }
           ]
         },
+        // 将编辑器路由移到这里，作为顶级路由
+        {
+          path: '/article/editor',
+          name: 'editor',
+          component: () => import('@/views/article/editor/layout.vue')
+        },
         {
           path: '/article/detail',
           name: 'detail',

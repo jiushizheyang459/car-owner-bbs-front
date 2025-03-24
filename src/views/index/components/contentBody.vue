@@ -1,13 +1,15 @@
 <template>
   <div id="content-body">
     <LatestNews />
-    <FeaturedArticle />
+    <Article />
+    <Event />
   </div>
 </template>
 
 <script setup lang="ts">
-import FeaturedArticle from './featuredArticle.vue'
+import Article from './article.vue'
 import LatestNews from './latestNews.vue'
+import Event from '@/views/index/components/event.vue'
 </script>
 
 <style scoped lang="less">

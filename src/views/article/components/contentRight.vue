@@ -12,11 +12,12 @@
         </div>
       </div>
       <div class="creator-body">
-        <el-row gutter="{20}">
+        <el-row :gutter="20">
           <el-col :span="12" v-for="(item, index) in creatorItems" :key="index">
             <div
               class="creator-item"
               :class="{ 'first-item': index === 0, 'second-item': index === 1 }"
+              @click="handleCreateClick(item)"
             >
               <img :src="item.icon" alt="" />
               <p>{{ item.text }}</p>
@@ -40,7 +41,7 @@
         </div>
       </div>
       <div class="follows-body">
-        <el-row gutter="{15}">
+        <el-row :gutter="15">
           <el-col :span="24" v-for="(follow, index) in follows" :key="index">
             <div class="follows-item">
               <img :src="follow.avatar" alt="" />
@@ -62,6 +63,7 @@
 
 <script setup lang="ts">
 import { ref } from 'vue'
+import { useRouter } from 'vue-router'
 
 // 定义创作中心的数据
 const creatorItems = ref([
@@ -98,6 +100,14 @@ const ads = ref([
   { text: 'Model Y焕新首发‼ ⚡抢首发版焕新ModelY和首发权益！' },
   { text: '重大消息！🎉Model Y新款震撼上市啦！🚗💨' }
 ])
+
+const router = useRouter()
+
+const handleCreateClick = (item: any) => {
+  if (item.text === '写文章') {
+    router.push('/article/editor')
+  }
+}
 </script>
 
 <style scoped lang="less">
