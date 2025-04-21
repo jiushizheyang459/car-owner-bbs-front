@@ -1,11 +1,11 @@
 <template>
   <div class="article-follow">
     <ul>
-      <li v-for="item in list" :key="item.id">
+      <li v-for="item in articleList" :key="item.id">
         <div @click="openDetail(item)">
           <div class="article-header">
-            <img :src="item.img" alt="" />
-            <span>{{ item.name }}</span>
+            <img :src="item.avatar" alt="" />
+            <span>{{ item.nickName }}</span>
           </div>
           <h2 class="article-title">{{ item.title }}</h2>
           <div class="article-content">
@@ -16,15 +16,13 @@
           <div class="left-actions">
             <ul>
               <li @click="toggleFavour(item)">
-                <img
-                  :src="item.favourFlag ? 'src/assets/icon/点赞.svg' : 'src/assets/icon/favour.svg'"
-                  class="action-icon"
-                />
-                <span :class="item.favourFlag ? 'favourNum' : ''">{{ item.favour }}</span>
+                <img :src="item.favourFlag ? 'src/assets/icon/点赞.svg' : 'src/assets/icon/favour.svg'"
+                  class="action-icon" />
+                <span :class="item.favourFlag ? 'favourNum' : ''">{{ item.favourCount }}</span>
               </li>
               <li>
                 <img src="@/assets/icon/comment.svg" />
-                {{ item.comment }}
+                {{ item.commentCount }}
               </li>
               <li>
                 <img src="@/assets/icon/view.svg" />
@@ -35,10 +33,7 @@
           <div class="right-actions">
             <ul>
               <li @click="toggleSave(item)">
-                <img
-                  :src="item.saveFlag ? 'src/assets/icon/收藏.svg' : 'src/assets/icon/save.svg'"
-                  class="action-icon"
-                />
+                <img :src="item.saveFlag ? 'src/assets/icon/收藏.svg' : 'src/assets/icon/save.svg'" class="action-icon" />
               </li>
               <li>
                 <img src="@/assets/icon/share.svg" />
@@ -48,32 +43,44 @@
         </div>
       </li>
     </ul>
+    <div class="pagination">
+      <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[5, 10, 20]"
+        layout="sizes, prev, pager, next, total" :total="articleTotalCount" @size-change="handleSizeChange"
+        @current-change="handleCurrentChange" />
+    </div>
   </div>
 </template>
 
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import useArticleStore from '@/store/article/article.ts'
+import { storeToRefs } from 'pinia'
 
-const list = ref([
-  {
-    img: 'src/assets/avatar/beibei.png',
-    name: '歹毒贝贝',
-    title: '建议周志敏把杨清逸打一顿',
-    content:
-      '近日，周志敏和杨清逸骂涨，周志敏一怒之下，把贝贝的笔洗摔了。著名教育家，画家，知名穿搭博主、美妆博主，小红书资深用户，微博SVIP会员贝贝女士建议两个人出门都被半挂创死，这样一来杨清逸就再也不敢这么嚣张了',
-    id: '1',
-    favourFlag: false,
-    favour: 88,
-    comment: 10,
-    viewCount: 10,
-    saveFlag: false
-  }
-])
+const currentPage = ref(1)
+const pageSize = ref(5)
+
+function handleSizeChange() {
+  fetchArticleListData()
+}
+function handleCurrentChange() {
+  fetchArticleListData()
+}
+
+function fetchArticleListData() {
+  const size = pageSize.value
+  const pageNum = currentPage.value
+  const info = { size, pageNum }
+  articleStore.getFollowingArticleListAction(info)
+}
+
+const articleStore = useArticleStore()
+fetchArticleListData()
+const { articleList, articleTotalCount } = storeToRefs(articleStore)
 
 const toggleFavour = (item: any) => {
   item.favourFlag = !item.favourFlag
-  item.favour = item.favour === 88 ? item.favour + 1 : item.favour - 1
+  item.favourCount = item.favourCount === 10 ? item.favourCount + 1 : item.favourCount - 1
 }
 
 const toggleSave = (item: any) => {
@@ -91,11 +98,11 @@ function openDetail(item: any) {
   display: flex;
   flex-wrap: wrap;
 
-  > ul {
+  >ul {
     width: 100%;
     padding: 20px;
 
-    > li {
+    >li {
       border-bottom: 1px solid #eee;
       padding: 10px 0;
     }
@@ -124,6 +131,12 @@ function openDetail(item: any) {
   font-size: 18px;
   font-weight: 600;
   line-height: 40px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #1296db;
+  }
 }
 
 /*多行省略*/
@@ -158,6 +171,7 @@ function openDetail(item: any) {
       img {
         height: 20px;
       }
+
       .favourNum {
         color: #1296db;
       }
@@ -194,7 +208,14 @@ function openDetail(item: any) {
 
 /* 鼠标悬停时进行缩放 */
 .article-actions li:hover .action-icon {
-  transform: scale(1.1); /* 图片放大 */
-  opacity: 0.7; /* 图片透明度变化 */
+  transform: scale(1.1);
+  /* 图片放大 */
+  opacity: 0.7;
+  /* 图片透明度变化 */
+}
+
+.pagination {
+  margin-left: 20px;
+  margin-bottom: 20px;
 }
 </style>

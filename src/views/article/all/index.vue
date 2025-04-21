@@ -2,24 +2,20 @@
   <div class="article-all">
     <ul>
       <li v-for="item in articleList" :key="item.id">
-        <div @click="openDetail(item)">
-          <div class="article-header">
-            <img :src="item.avatar" alt="" />
-            <span>{{ item.nickName }}</span>
-          </div>
-          <h2 class="article-title">{{ item.title }}</h2>
-          <div class="article-content">
-            {{ item.content }}
-          </div>
+        <div class="article-header">
+          <img :src="item.avatar" alt="" />
+          <span>{{ item.nickName }}</span>
+        </div>
+        <h2 class="article-title" @click="openDetail(item)">{{ item.title }}</h2>
+        <div class="article-content">
+          {{ item.content }}
         </div>
         <div class="article-actions">
           <div class="left-actions">
             <ul>
               <li @click="toggleFavour(item)">
-                <img
-                  :src="item.favourFlag ? 'src/assets/icon/点赞.svg' : 'src/assets/icon/favour.svg'"
-                  class="action-icon"
-                />
+                <img :src="item.favourFlag ? 'src/assets/icon/点赞.svg' : 'src/assets/icon/favour.svg'"
+                  class="action-icon" />
                 <span :class="item.favourFlag ? 'favourNum' : ''">{{ item.favourCount }}</span>
               </li>
               <li>
@@ -35,10 +31,7 @@
           <div class="right-actions">
             <ul>
               <li @click="toggleSave(item)">
-                <img
-                  :src="item.saveFlag ? 'src/assets/icon/收藏.svg' : 'src/assets/icon/save.svg'"
-                  class="action-icon"
-                />
+                <img :src="item.saveFlag ? 'src/assets/icon/收藏.svg' : 'src/assets/icon/save.svg'" class="action-icon" />
               </li>
               <li>
                 <img src="@/assets/icon/share.svg" />
@@ -49,15 +42,9 @@
       </li>
     </ul>
     <div class="pagination">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[5, 10, 20]"
-        layout="sizes, prev, pager, next, total"
-        :total="articleTotalCount"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[5, 10, 20]"
+        layout="sizes, prev, pager, next, total" :total="articleTotalCount" @size-change="handleSizeChange"
+        @current-change="handleCurrentChange" />
     </div>
   </div>
 </template>
@@ -106,7 +93,7 @@ const toggleSave = (item: any) => {
 
 const router = useRouter()
 function openDetail(item: any) {
-  router.push('/article/detail')
+  router.push(`/article/detail/${item.id}`)
 }
 //endregion
 </script>
@@ -116,11 +103,11 @@ function openDetail(item: any) {
   display: flex;
   flex-wrap: wrap;
 
-  > ul {
+  >ul {
     width: 100%;
     padding: 20px;
 
-    > li {
+    >li {
       border-bottom: 1px solid #eee;
       padding: 10px 0;
     }
@@ -149,6 +136,12 @@ function openDetail(item: any) {
   font-size: 18px;
   font-weight: 600;
   line-height: 40px;
+  cursor: pointer;
+  transition: color 0.3s ease;
+
+  &:hover {
+    color: #1296db;
+  }
 }
 
 /*多行省略*/
@@ -183,6 +176,7 @@ function openDetail(item: any) {
       img {
         height: 20px;
       }
+
       .favourNum {
         color: #1296db;
       }
@@ -219,8 +213,10 @@ function openDetail(item: any) {
 
 /* 鼠标悬停时进行缩放 */
 .article-actions li:hover .action-icon {
-  transform: scale(1.1); /* 图片放大 */
-  opacity: 0.7; /* 图片透明度变化 */
+  transform: scale(1.1);
+  /* 图片放大 */
+  opacity: 0.7;
+  /* 图片透明度变化 */
 }
 
 .pagination {

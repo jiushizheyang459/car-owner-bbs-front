@@ -58,35 +58,42 @@ const router = createRouter({
           component: () => import('@/views/article/editor/layout.vue')
         },
         {
-          path: '/article/detail',
+          path: '/article/detail/:id',
           name: 'detail',
           component: () => import('../views/article/detail/index.vue')
-        }
-        /*{
-          path: '/main/information',
-          name: 'information',
-          component: () => import('../views/information/index.vue')
         },
         {
-          path: '/main/trading',
-          name: 'trading',
-          component: () => import('../views/trading/index.vue')
-        },
-        {
-          path: '/main/knowledge',
+          path: '/knowledge',
           name: 'knowledge',
           component: () => import('../views/knowledge/index.vue')
         },
         {
-          path: '/main/event',
+          path: '/information',
+          name: 'information',
+          component: () => import('../views/information/index.vue')
+        },
+        {
+          path: '/event',
           name: 'event',
           component: () => import('../views/event/index.vue')
         },
         {
-          path: '/main/friendly',
+          path: '/friendly',
           name: 'friendly',
           component: () => import('../views/friendly/index.vue')
-        }*/
+        }
+        /*
+        {
+          path: '/main/trading',
+          name: 'trading',
+          component: () => import('../views/trading/info.vue')
+        },
+        {
+          path: '/main/event',
+          name: 'event',
+          component: () => import('../views/event/info.vue')
+        },
+        */
       ]
     }
   ]

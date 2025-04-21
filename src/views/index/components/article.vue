@@ -5,15 +5,12 @@
         <div class="featured-article-title">
           <el-text class="mx-1" size="large" tag="b">精选文章</el-text>
           <div class="featured-article-title-button">
-            <el-button type="" key="plain" link>
-              查看更多
-              <img src="@/assets/icon/更多.svg" alt="tooMany" />
-            </el-button>
+            <el-button type="" key="plain" link @click="openDetail()"> 查看更多>> </el-button>
           </div>
         </div>
         <div class="card">
           <el-row>
-            <el-col style="margin-top: 10px" v-for="item in lists1">
+            <el-col style="margin-top: 10px" v-for="item in hotArticleList" :key="item.id">
               <el-card
                 class="box-card"
                 shadow="hover"
@@ -21,7 +18,7 @@
               >
                 <el-row style="height: 100%">
                   <el-col class="article-img" :span="5">
-                    <el-image style="height: 100%; width: 100%" :src="item.img" fit="cover" />
+                    <el-image style="height: 100%; width: 100%" :src="item.thumbnail" fit="cover" />
                   </el-col>
                   <el-col :span="19" class="content-wrapper">
                     <el-row class="article-body" justify="space-between">
@@ -29,9 +26,9 @@
                         <div
                           style="display: flex; align-items: center; justify-content: flex-start"
                         >
-                          <el-avatar size="small" :src="item.avater" />
+                          <el-avatar size="small" :src="item.avatar" />
                           <el-text class="mx-1 author-text" size="large" tag="b">{{
-                            item.author
+                            item.nickName
                           }}</el-text>
                         </div>
                       </el-col>
@@ -59,22 +56,22 @@
             <el-text class="mx-1" size="large" tag="b">最新文章</el-text>
             <el-divider />
             <el-row>
-              <el-col style="margin-bottom: 15px; margin-top: 1px" v-for="item in lists2">
+              <el-col style="margin-bottom: 15px; margin-top: 1px" v-for="item in newArticleList">
                 <div class="title">
                   <el-text class="mx-1" size="large" tag="b">{{ item.title }}</el-text>
                 </div>
                 <el-row style="margin-top: 10px" type="flex" justify="space-between" align="middle">
                   <el-col :span="18">
                     <div style="display: flex; align-items: center">
-                      <el-avatar size="small" :src="item.avater" />
-                      <span style="font-size: 12px">{{ item.author }}</span>
+                      <el-avatar size="small" :src="item.avatar" />
+                      <span style="font-size: 12px">{{ item.nickName }}</span>
                     </div>
                   </el-col>
                   <el-col :span="6">
                     <div style="display: flex; align-items: center; justify-content: flex-end">
                       <el-image
                         style="width: 24px; height: 24px"
-                        src="src/assets/icon/点赞.svg"
+                        src="src/assets/icon/favour.svg"
                         fit="fill"
                       />
                       <span style="font-size: 12px">{{ item.favour }}</span>
@@ -91,37 +88,22 @@
 </template>
 
 <script setup lang="ts">
-const lists1 = [
-  {
-    img: 'src/assets/avatar/beibei.png',
-    avater: 'src/assets/avatar/beibei.png',
-    title: '泥嚎',
-    author: '贝贝',
-    content:
-      '贝贝是猪娃娃，这是一个客观事实，为什么呢，因为贝贝是个猪娃娃，吃了睡睡了吃，一天不是种草就是八屎，你说这不是猪娃娃是啥，大家心里都清楚这个事情，但是没人给她说这个事情，所以她一直觉得好的，还特别特别的能花钱'
-  },
-  {
-    img: 'src/assets/avatar/beibei.png',
-    avater: 'src/assets/avatar/beibei.png',
-    title: '泥嚎',
-    author: '贝贝',
-    content: '贝贝是猪娃娃'
-  },
-  {
-    img: 'src/assets/avatar/beibei.png',
-    avater: 'src/assets/avatar/beibei.png',
-    title: '泥嚎',
-    author: '贝贝',
-    content: '贝贝是猪娃娃'
-  },
-  {
-    img: 'src/assets/avatar/beibei.png',
-    avater: 'src/assets/avatar/beibei.png',
-    title: '泥嚎',
-    author: '贝贝',
-    content: '贝贝是猪娃娃'
-  }
-]
+import useArticleStore from '@/store/article/article.ts'
+import { storeToRefs } from 'pinia'
+import { useRouter } from 'vue-router'
+
+const articleStore = useArticleStore()
+articleStore.getHotArticleListAction()
+articleStore.getNewArticleListAction()
+
+const { hotArticleList } = storeToRefs(articleStore)
+const { newArticleList } = storeToRefs(articleStore)
+
+const router = useRouter()
+
+function openDetail() {
+  router.push(`/article/all`)
+}
 
 const lists2 = [
   {
@@ -238,11 +220,13 @@ const lists2 = [
           .content-text {
             display: -webkit-box;
             -webkit-box-orient: vertical;
-            -webkit-line-clamp: 3; /* 固定显示3行 */
+            -webkit-line-clamp: 3;
+            /* 固定显示3行 */
             overflow: hidden;
             text-overflow: ellipsis;
             line-height: 1.5em;
-            max-height: 4.5em; /* 3行的高度 = 行高 × 行数 */
+            max-height: 4.5em;
+            /* 3行的高度 = 行高 × 行数 */
             margin-bottom: 0;
           }
         }

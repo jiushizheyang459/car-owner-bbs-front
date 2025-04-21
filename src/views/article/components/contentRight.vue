@@ -27,8 +27,8 @@
       </div>
       <div class="creator-footer">
         <el-carousel height="100px" direction="vertical" autoplay indicator-position="none">
-          <el-carousel-item v-for="(ad, index) in ads" :key="index">
-            <div class="carousel-item">{{ ad.text }}</div>
+          <el-carousel-item v-for="(adv, index) in advertisementList" :key="index">
+            <div class="carousel-item">{{ adv.title }}</div>
           </el-carousel-item>
         </el-carousel>
       </div>
@@ -42,16 +42,28 @@
       </div>
       <div class="follows-body">
         <el-row :gutter="15">
-          <el-col :span="24" v-for="(follow, index) in follows" :key="index">
+          <el-col :span="24" v-for="user in recommendedUsers" :key="user.id">
             <div class="follows-item">
-              <img :src="follow.avatar" alt="" />
+              <img :src="user.avatar" alt="" />
               <div class="follows-content">
-                <div class="follows-head">{{ follow.name }}</div>
+                <div class="follows-head">{{ user.nickName }}</div>
                 <div class="follows-detail">你可能感兴趣</div>
               </div>
-              <el-button class="follows-button" type="text">
-                <img src="@/assets/icon/add.svg" alt="" />
-                <span>关注</span>
+              <el-button
+                class="follows-button"
+                :class="{ 'is-followed': followStatus[user.id] }"
+                type="text"
+                @click="handleFollowClick(user.id)"
+              >
+                <img
+                  :src="
+                    followStatus[user.id]
+                      ? 'src/assets/icon/reduction.svg'
+                      : 'src/assets/icon/add.svg'
+                  "
+                  alt=""
+                />
+                <span>{{ followStatus[user.id] ? '已关注' : '关注' }}</span>
               </el-button>
             </div>
           </el-col>
@@ -64,6 +76,10 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
+import useUserStore from '@/store/user/user.ts'
+import useFollowStore from '@/store/follows/follows.ts'
+import { storeToRefs } from 'pinia'
+import useAdvStore from '@/store/advertisement/advertisement.ts'
 
 // 定义创作中心的数据
 const creatorItems = ref([
@@ -77,29 +93,15 @@ const creatorItems = ref([
   }
 ])
 
-// 定义推荐关注的数据
-const follows = ref([
-  {
-    avatar: 'src/assets/avatar/beibei.png',
-    name: '猪贝'
-  },
-  {
-    avatar: 'src/assets/avatar/benben.jpg',
-    name: '笨笨'
-  },
-  {
-    avatar: 'src/assets/avatar/littleBread.jpeg',
-    name: '小面包'
-  }
-])
-
-// 定义广告数据
-const ads = ref([
-  { text: '特斯拉Model3限时抢购风暴！' },
-  { text: 'Model Y经典版本 即将绝代' },
-  { text: 'Model Y焕新首发‼ ⚡抢首发版焕新ModelY和首发权益！' },
-  { text: '重大消息！🎉Model Y新款震撼上市啦！🚗💨' }
-])
+// 获取推荐关注的数据
+const userStore = useUserStore()
+const followStore = useFollowStore()
+const advStore = useAdvStore()
+userStore.getRecommendedUsersAction()
+advStore.getAdvertisementAction()
+const { recommendedUsers } = storeToRefs(userStore)
+const { followStatus } = storeToRefs(followStore)
+const { advertisementList } = storeToRefs(advStore)
 
 const router = useRouter()
 
@@ -107,6 +109,10 @@ const handleCreateClick = (item: any) => {
   if (item.text === '写文章') {
     router.push('/article/editor')
   }
+}
+
+const handleFollowClick = async (userId: number) => {
+  await followStore.toggleFollowAction(userId)
 }
 </script>
 
@@ -159,6 +165,7 @@ const handleCreateClick = (item: any) => {
       align-items: center;
       font-size: 14px;
       margin: 20px 0;
+      cursor: pointer;
 
       img {
         display: block;
@@ -166,6 +173,10 @@ const handleCreateClick = (item: any) => {
         border-radius: 20%;
         width: 40px;
         line-height: 40px;
+      }
+
+      p {
+        cursor: pointer;
       }
 
       &.first-item img {
@@ -240,6 +251,10 @@ const handleCreateClick = (item: any) => {
       img {
         height: 20px;
         margin-right: -3px;
+      }
+
+      &.is-followed {
+        color: #707070;
       }
     }
   }

@@ -44,7 +44,7 @@ const menuItems = [
   { path: '/index', label: '首页' },
   { path: '/article', label: '文章' },
   { path: '/information', label: '资讯' },
-  { path: '/trading', label: '交易' },
+  // { path: '/trading', label: '交易' },
   { path: '/knowledge', label: '知识' },
   { path: '/event', label: '活动' },
   { path: '/friendly', label: '友情链接' }
