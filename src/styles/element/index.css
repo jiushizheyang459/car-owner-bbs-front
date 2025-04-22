@@ -1,0 +1,52 @@
+/* 配置 Element Plus 消息提示的全局样式 */
+.el-message {
+  min-width: 300px !important;
+  padding: 15px 20px !important;
+  border-radius: 8px !important;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15) !important;
+  top: 20% !important;
+  left: 50% !important;
+  transform: translateX(-50%) !important;
+  margin: 0 !important;
+  position: fixed !important;
+  z-index: 9999 !important;
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  background: #fff !important;
+  border: none !important;
+}
+
+.el-message--success {
+  background: #f0f9eb !important;
+  border-color: #e1f3d8 !important;
+  color: #67c23a !important;
+}
+
+.el-message--error {
+  background: #fef0f0 !important;
+  border-color: #fde2e2 !important;
+  color: #f56c6c !important;
+}
+
+.el-message--warning {
+  background: #fdf6ec !important;
+  border-color: #faecd8 !important;
+  color: #e6a23c !important;
+}
+
+.el-message--info {
+  background: #f4f4f5 !important;
+  border-color: #ebeef5 !important;
+  color: #909399 !important;
+}
+
+.el-message .el-message__icon {
+  font-size: 20px !important;
+  margin-right: 10px !important;
+}
+
+.el-message .el-message__content {
+  font-size: 14px !important;
+  line-height: 1.4 !important;
+}

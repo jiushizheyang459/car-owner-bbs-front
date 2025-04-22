@@ -7,6 +7,9 @@
       <span>浏览量: {{ articleDetail?.viewCount }}</span>
     </div>
     <div class="article-content prose" v-html="articleDetail?.content"></div>
+
+    <!-- 评论组件 -->
+    <Comment :article-id="Number(route.params.id)" />
   </div>
 </template>
 
@@ -15,6 +18,7 @@ import { onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import useArticleStore from '@/store/article/article'
 import { storeToRefs } from 'pinia'
+import Comment from '../components/Comment.vue'
 
 const route = useRoute()
 const articleStore = useArticleStore()

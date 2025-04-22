@@ -2,23 +2,23 @@
   <div class="article-follow">
     <ul>
       <li v-for="item in articleList" :key="item.id">
-        <div @click="openDetail(item)">
-          <div class="article-header">
-            <img :src="item.avatar" alt="" />
-            <span>{{ item.nickName }}</span>
-          </div>
-          <h2 class="article-title">{{ item.title }}</h2>
-          <div class="article-content">
-            {{ item.content }}
-          </div>
+        <div class="article-header">
+          <img :src="item.avatar" alt="" />
+          <span>{{ item.nickName }}</span>
+        </div>
+        <h2 class="article-title" @click="openDetail(item)">{{ item.title }}</h2>
+        <div class="article-content">
+          {{ item.content }}
         </div>
         <div class="article-actions">
           <div class="left-actions">
             <ul>
-              <li @click="toggleFavour(item)">
-                <img :src="item.favourFlag ? 'src/assets/icon/点赞.svg' : 'src/assets/icon/favour.svg'"
-                  class="action-icon" />
-                <span :class="item.favourFlag ? 'favourNum' : ''">{{ item.favourCount }}</span>
+              <li @click="toggleLike(item)">
+                <img
+                  :src="item.likeFlag ? 'src/assets/icon/点赞.svg' : 'src/assets/icon/favour.svg'"
+                  class="action-icon"
+                />
+                <span :class="item.likeFlag ? 'likeNum' : ''">{{ item.likeCount }}</span>
               </li>
               <li>
                 <img src="@/assets/icon/comment.svg" />
@@ -33,7 +33,10 @@
           <div class="right-actions">
             <ul>
               <li @click="toggleSave(item)">
-                <img :src="item.saveFlag ? 'src/assets/icon/收藏.svg' : 'src/assets/icon/save.svg'" class="action-icon" />
+                <img
+                  :src="item.saveFlag ? 'src/assets/icon/收藏.svg' : 'src/assets/icon/save.svg'"
+                  class="action-icon"
+                />
               </li>
               <li>
                 <img src="@/assets/icon/share.svg" />
@@ -44,18 +47,25 @@
       </li>
     </ul>
     <div class="pagination">
-      <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[5, 10, 20]"
-        layout="sizes, prev, pager, next, total" :total="articleTotalCount" @size-change="handleSizeChange"
-        @current-change="handleCurrentChange" />
+      <el-pagination
+        v-model:current-page="currentPage"
+        v-model:page-size="pageSize"
+        :page-sizes="[5, 10, 20]"
+        layout="sizes, prev, pager, next, total"
+        :total="articleTotalCount"
+        @size-change="handleSizeChange"
+        @current-change="handleCurrentChange"
+      />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { onMounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
 import useArticleStore from '@/store/article/article.ts'
 import { storeToRefs } from 'pinia'
+import useLikeStore from '@/store/like/like.ts'
 
 const currentPage = ref(1)
 const pageSize = ref(5)
@@ -75,12 +85,24 @@ function fetchArticleListData() {
 }
 
 const articleStore = useArticleStore()
+const likeStore = useLikeStore()
+
 fetchArticleListData()
 const { articleList, articleTotalCount } = storeToRefs(articleStore)
+const { likeStatus, likeCounts } = storeToRefs(likeStore)
 
-const toggleFavour = (item: any) => {
-  item.favourFlag = !item.favourFlag
-  item.favourCount = item.favourCount === 10 ? item.favourCount + 1 : item.favourCount - 1
+onMounted(() => {
+  articleList.value.forEach((article) => {
+    likeStore.getLikeStatusAction(article.id)
+    likeStore.getLikeCountAction(article.id)
+  })
+})
+
+const toggleLike = async (item: any) => {
+  await likeStore.toggleLikeAction(item.id)
+  // 更新文章列表中的点赞状态和数量
+  item.likeFlag = likeStatus.value[item.id]
+  item.likeCount = likeCounts.value[item.id]
 }
 
 const toggleSave = (item: any) => {
@@ -89,7 +111,7 @@ const toggleSave = (item: any) => {
 
 const router = useRouter()
 function openDetail(item: any) {
-  router.push('/article/detail')
+  router.push(`/article/detail/${item.id}`)
 }
 </script>
 
@@ -98,11 +120,11 @@ function openDetail(item: any) {
   display: flex;
   flex-wrap: wrap;
 
-  >ul {
+  > ul {
     width: 100%;
     padding: 20px;
 
-    >li {
+    > li {
       border-bottom: 1px solid #eee;
       padding: 10px 0;
     }
@@ -172,7 +194,7 @@ function openDetail(item: any) {
         height: 20px;
       }
 
-      .favourNum {
+      .likeNum {
         color: #1296db;
       }
     }

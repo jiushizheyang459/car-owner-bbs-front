@@ -13,12 +13,12 @@
         <div class="article-actions">
           <div class="left-actions">
             <ul>
-              <li @click="toggleFavour(item)">
+              <li @click="toggleLike(item)">
                 <img
-                  :src="item.favourFlag ? 'src/assets/icon/点赞.svg' : 'src/assets/icon/favour.svg'"
+                  :src="item.likeFlag ? 'src/assets/icon/点赞.svg' : 'src/assets/icon/favour.svg'"
                   class="action-icon"
                 />
-                <span :class="item.favourFlag ? 'favourNum' : ''">{{ item.favourCount }}</span>
+                <span :class="item.likeFlag ? 'likeNum' : ''">{{ item.likeCount }}</span>
               </li>
               <li>
                 <img src="@/assets/icon/comment.svg" />
@@ -61,9 +61,10 @@
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import useArticleStore from '@/store/article/article.ts'
+import useLikeStore from '@/store/like/like.ts'
 import { storeToRefs } from 'pinia'
 
 //region 分页部分
@@ -87,15 +88,27 @@ function fetchArticleListData() {
 
 //region 查询数据请求
 const articleStore = useArticleStore()
+const likeStore = useLikeStore()
 
 fetchArticleListData()
 const { articleList, articleTotalCount } = storeToRefs(articleStore)
+const { likeStatus, likeCounts } = storeToRefs(likeStore)
+
+// 获取每篇文章的点赞状态和点赞数
+onMounted(() => {
+  articleList.value.forEach((article) => {
+    likeStore.getLikeStatusAction(article.id)
+    likeStore.getLikeCountAction(article.id)
+  })
+})
 //endregion
 
 //region 路由部分
-const toggleFavour = (item: any) => {
-  item.favourFlag = !item.favourFlag
-  item.favourCount = item.favourCount === 10 ? item.favourCount + 1 : item.favourCount - 1
+const toggleLike = async (item: any) => {
+  await likeStore.toggleLikeAction(item.id)
+  // 更新文章列表中的点赞状态和数量
+  item.likeFlag = likeStatus.value[item.id]
+  item.likeCount = likeCounts.value[item.id]
 }
 
 const toggleSave = (item: any) => {
@@ -188,7 +201,7 @@ function openDetail(item: any) {
         height: 20px;
       }
 
-      .favourNum {
+      .likeNum {
         color: #1296db;
       }
     }

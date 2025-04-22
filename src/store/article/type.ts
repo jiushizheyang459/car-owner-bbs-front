@@ -1,10 +1,9 @@
-//TODO JSON 2 TypeScript
 export interface IArticle {
   avatar: string
   commentCount: number
   content: string
-  favourCount: number
-  favourFlag: boolean
+  likeCount: number
+  likeFlag: boolean
   id: number
   nickName: string
   saveFlag: boolean
