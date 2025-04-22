@@ -14,10 +14,8 @@
           <div class="left-actions">
             <ul>
               <li @click="toggleLike(item)">
-                <img
-                  :src="item.likeFlag ? 'src/assets/icon/点赞.svg' : 'src/assets/icon/favour.svg'"
-                  class="action-icon"
-                />
+                <img :src="item.likeFlag ? 'src/assets/icon/点赞.svg' : 'src/assets/icon/favour.svg'"
+                  class="action-icon" />
                 <span :class="item.likeFlag ? 'likeNum' : ''">{{ item.likeCount }}</span>
               </li>
               <li>
@@ -33,10 +31,7 @@
           <div class="right-actions">
             <ul>
               <li @click="toggleSave(item)">
-                <img
-                  :src="item.saveFlag ? 'src/assets/icon/收藏.svg' : 'src/assets/icon/save.svg'"
-                  class="action-icon"
-                />
+                <img :src="item.saveFlag ? 'src/assets/icon/收藏.svg' : 'src/assets/icon/save.svg'" class="action-icon" />
               </li>
               <li>
                 <img src="@/assets/icon/share.svg" />
@@ -47,15 +42,9 @@
       </li>
     </ul>
     <div class="pagination">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[5, 10, 20]"
-        layout="sizes, prev, pager, next, total"
-        :total="articleTotalCount"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[5, 10, 20]"
+        layout="sizes, prev, pager, next, total" :total="articleTotalCount" @size-change="handleSizeChange"
+        @current-change="handleCurrentChange" />
     </div>
   </div>
 </template>
@@ -65,6 +54,7 @@ import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import useArticleStore from '@/store/article/article.ts'
 import useLikeStore from '@/store/like/like.ts'
+import useSaveStore from '@/store/save/save.ts'
 import { storeToRefs } from 'pinia'
 
 //region 分页部分
@@ -89,6 +79,7 @@ function fetchArticleListData() {
 //region 查询数据请求
 const articleStore = useArticleStore()
 const likeStore = useLikeStore()
+const saveStore = useSaveStore()
 
 fetchArticleListData()
 const { articleList, articleTotalCount } = storeToRefs(articleStore)
@@ -111,8 +102,20 @@ const toggleLike = async (item: any) => {
   item.likeCount = likeCounts.value[item.id]
 }
 
-const toggleSave = (item: any) => {
-  item.saveFlag = !item.saveFlag
+const toggleSave = async (item: any) => {
+  if (item.saveFlag) {
+    // 如果已经收藏，则取消收藏
+    const success = await saveStore.deleteSaveAction(item.id)
+    if (success) {
+      item.saveFlag = false
+    }
+  } else {
+    // 如果未收藏，则添加收藏
+    const success = await saveStore.addSaveAction(item.id)
+    if (success) {
+      item.saveFlag = true
+    }
+  }
 }
 
 const router = useRouter()
@@ -127,11 +130,11 @@ function openDetail(item: any) {
   display: flex;
   flex-wrap: wrap;
 
-  > ul {
+  >ul {
     width: 100%;
     padding: 20px;
 
-    > li {
+    >li {
       border-bottom: 1px solid #eee;
       padding: 10px 0;
     }
