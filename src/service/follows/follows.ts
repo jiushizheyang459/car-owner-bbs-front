@@ -17,3 +17,9 @@ export function deleteFollow(followedId: number) {
     }
   })
 }
+
+export function getRecommendedUsers() {
+  return hyRequest.get({
+    url: '/follows/recommendFollowsList'
+  })
+}

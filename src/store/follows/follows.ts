@@ -1,11 +1,12 @@
 import { defineStore } from 'pinia'
-import { addFollow, deleteFollow } from '@/service/follows/follows'
+import { addFollow, deleteFollow, getRecommendedUsers } from '@/service/follows/follows'
 import type { IFollowState } from './type'
 import { ElMessage } from 'element-plus'
 
 const useFollowStore = defineStore('follows', {
   state: (): IFollowState => ({
-    followStatus: {}
+    followStatus: {},
+    recommendedUsers: []
   }),
   actions: {
     toggleFollowAction(userId: number) {
@@ -20,6 +21,14 @@ const useFollowStore = defineStore('follows', {
           ElMessage.success('关注成功')
         })
       }
+    },
+    async getRecommendedUsersAction() {
+      const result = await getRecommendedUsers()
+      this.recommendedUsers = result.data.data
+      // 更新关注状态
+      this.recommendedUsers.forEach((user) => {
+        this.followStatus[user.id] = user.followsFlag
+      })
     }
   }
 })

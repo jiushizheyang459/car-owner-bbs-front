@@ -6,10 +6,10 @@
           <img src="@/assets/icon/creator.svg" alt="creator" />
           <span>创作中心</span>
         </div>
-        <div class="creator-checkIn">
-          <img src="@/assets/icon/calendar.svg" alt="" />
-          <el-button type="primary">签到</el-button>
-        </div>
+        <!--        <div class="creator-checkIn">-->
+        <!--          <img src="@/assets/icon/calendar.svg" alt="" />-->
+        <!--          <el-button type="primary">签到</el-button>-->
+        <!--        </div>-->
       </div>
       <div class="creator-body">
         <el-row :gutter="20">
@@ -76,7 +76,6 @@
 <script setup lang="ts">
 import { ref } from 'vue'
 import { useRouter } from 'vue-router'
-import useUserStore from '@/store/user/user.ts'
 import useFollowStore from '@/store/follows/follows.ts'
 import { storeToRefs } from 'pinia'
 import useAdvStore from '@/store/advertisement/advertisement.ts'
@@ -94,13 +93,11 @@ const creatorItems = ref([
 ])
 
 // 获取推荐关注的数据
-const userStore = useUserStore()
 const followStore = useFollowStore()
 const advStore = useAdvStore()
-userStore.getRecommendedUsersAction()
+followStore.getRecommendedUsersAction()
 advStore.getAdvertisementAction()
-const { recommendedUsers } = storeToRefs(userStore)
-const { followStatus } = storeToRefs(followStore)
+const { recommendedUsers, followStatus } = storeToRefs(followStore)
 const { advertisementList } = storeToRefs(advStore)
 
 const router = useRouter()
