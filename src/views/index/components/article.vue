@@ -39,7 +39,7 @@
                       </el-col>
                       <el-col style="margin-top: 5px; flex-grow: 1">
                         <el-text class="mx-1 content-text" size="large" tag="p">{{
-                          item.content
+                          stripHtml(item.content, 100)
                         }}</el-text>
                       </el-col>
                     </el-row>
@@ -91,6 +91,7 @@
 import useArticleStore from '@/store/article/article.ts'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
+import { stripHtml } from '@/utils/htmlUtils'
 
 const articleStore = useArticleStore()
 articleStore.getHotArticleListAction()
@@ -104,57 +105,6 @@ const router = useRouter()
 function openDetail() {
   router.push(`/article/all`)
 }
-
-const lists2 = [
-  {
-    avater: 'src/assets/avatar/beibei.png',
-    title: '盐官gai上的霸王花是谁？',
-    author: '贝贝',
-    favour: 13
-  },
-  {
-    avater: 'src/assets/avatar/beibei.png',
-    title: '盐官gai上的霸王花是谁？',
-    author: '贝贝',
-    favour: 13
-  },
-  {
-    avater: 'src/assets/avatar/beibei.png',
-    title: '盐官gai上的霸王花是谁？',
-    author: '贝贝',
-    favour: 13
-  },
-  {
-    avater: 'src/assets/avatar/beibei.png',
-    title: '盐官gai上的霸王花是谁？',
-    author: '贝贝',
-    favour: 13
-  },
-  {
-    avater: 'src/assets/avatar/beibei.png',
-    title: '盐官gai上的霸王花是谁？',
-    author: '贝贝',
-    favour: 13
-  },
-  {
-    avater: 'src/assets/avatar/beibei.png',
-    title: '盐官gai上的霸王花是谁？',
-    author: '贝贝',
-    favour: 13
-  },
-  {
-    avater: 'src/assets/avatar/beibei.png',
-    title: '盐官gai上的霸王花是谁？',
-    author: '贝贝',
-    favour: 13
-  },
-  {
-    avater: 'src/assets/avatar/beibei.png',
-    title: '盐官gai上的霸王花是谁？',
-    author: '贝贝',
-    favour: 13
-  }
-]
 </script>
 
 <style scoped lang="less">

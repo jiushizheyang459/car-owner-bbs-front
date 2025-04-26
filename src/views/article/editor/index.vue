@@ -1,12 +1,25 @@
 <template>
   <div class="editor-container">
     <div class="editor-header">
-      <el-input
-        v-model="articleTitle"
-        placeholder="请输入文章标题"
-        class="title-input"
-        size="large"
-      />
+      <el-row :gutter="20" align="middle" class="full-width">
+        <el-col :span="16">
+          <el-input
+            v-model="articleTitle"
+            placeholder="请输入文章标题"
+            class="title-input"
+            size="large"
+          />
+        </el-col>
+        <el-col :span="8">
+          <div class="thumbnail-upload">
+            <el-button type="primary" @click="handleThumbnailUpload"> 上传缩略图 </el-button>
+            <div v-if="thumbnail" class="thumbnail-preview" @click="showPreview">
+              <img :src="thumbnail" alt="缩略图预览" />
+              <div class="preview-hint">点击查看大图</div>
+            </div>
+          </div>
+        </el-col>
+      </el-row>
     </div>
     <div class="editor-toolbar">
       <el-button-group>
@@ -150,11 +163,18 @@
         </span>
       </template>
     </el-dialog>
+
+    <!-- 图片预览弹窗 -->
+    <el-dialog v-model="previewVisible" title="缩略图预览" width="50%" :show-close="true">
+      <div class="preview-container">
+        <img :src="thumbnail" alt="大图预览" class="preview-image" />
+      </div>
+    </el-dialog>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, onBeforeUnmount } from 'vue'
+import { ref, onBeforeUnmount, onMounted } from 'vue'
 import { useEditor, EditorContent } from '@tiptap/vue-3'
 import StarterKit from '@tiptap/starter-kit'
 import Underline from '@tiptap/extension-underline'
@@ -163,6 +183,16 @@ import Color from '@tiptap/extension-color'
 import Image from '@tiptap/extension-image'
 import Link from '@tiptap/extension-link'
 import Placeholder from '@tiptap/extension-placeholder'
+import { useRouter, useRoute } from 'vue-router'
+import useArticleStore from '@/store/article/article'
+import useUploadStore from '@/store/upload/upload'
+import { ElMessage } from 'element-plus'
+import type { IAddArticleDto } from '@/store/article/type'
+
+const router = useRouter()
+const route = useRoute()
+const articleStore = useArticleStore()
+const uploadStore = useUploadStore()
 
 const articleTitle = ref('')
 const textColor = ref('')
@@ -171,6 +201,9 @@ const linkForm = ref({
   text: '',
   url: ''
 })
+const articleId = ref<number | null>(null)
+const thumbnail = ref('')
+const previewVisible = ref(false)
 
 const editor = useEditor({
   content: '',
@@ -231,9 +264,25 @@ const handleImageUpload = () => {
   input.onchange = async (event) => {
     const file = (event.target as HTMLInputElement).files?.[0]
     if (file) {
-      // TODO: 实现图片上传到服务器的逻辑
-      const url = URL.createObjectURL(file)
-      editor.value?.chain().focus().setImage({ src: url }).run()
+      try {
+        ElMessage({
+          type: 'info',
+          message: '图片上传中...'
+        })
+        const imageUrl = await uploadStore.uploadImageAction(file)
+        if (imageUrl) {
+          editor.value?.chain().focus().setImage({ src: imageUrl }).run()
+          ElMessage({
+            type: 'success',
+            message: '图片上传成功'
+          })
+        }
+      } catch (error) {
+        ElMessage({
+          type: 'error',
+          message: '图片上传失败，请重试'
+        })
+      }
     }
   }
   input.click()
@@ -279,21 +328,161 @@ const confirmInsertLink = () => {
   linkForm.value = { text: '', url: '' }
 }
 
+// 处理缩略图上传
+const handleThumbnailUpload = () => {
+  const input = document.createElement('input')
+  input.type = 'file'
+  input.accept = 'image/*'
+  input.onchange = async (event) => {
+    const file = (event.target as HTMLInputElement).files?.[0]
+    if (file) {
+      try {
+        ElMessage({
+          type: 'info',
+          message: '图片上传中...'
+        })
+        const imageUrl = await uploadStore.uploadImageAction(file)
+        if (imageUrl) {
+          thumbnail.value = imageUrl
+          ElMessage({
+            type: 'success',
+            message: '缩略图上传成功'
+          })
+        }
+      } catch (error) {
+        ElMessage({
+          type: 'error',
+          message: '缩略图上传失败，请重试'
+        })
+      }
+    }
+  }
+  input.click()
+}
+
+// 组件挂载时检查是否有文章ID参数，如果有则查询文章详情
+onMounted(async () => {
+  // 从query参数中获取文章ID
+  const id = route.query.id
+  if (id) {
+    articleId.value = Number(id)
+    await fetchArticleDetail()
+  }
+})
+
+// 获取文章详情
+const fetchArticleDetail = async () => {
+  if (!articleId.value) {
+    ElMessage.error('文章ID为空，无法获取文章详情')
+    return
+  }
+
+  try {
+    await articleStore.getArticleDetailAction(articleId.value)
+    const articleDetail = articleStore.articleDetail
+
+    if (articleDetail) {
+      // 回填文章标题
+      articleTitle.value = articleDetail.title
+
+      // 回填文章内容
+      if (editor.value && articleDetail.content) {
+        editor.value.commands.setContent(articleDetail.content)
+      }
+
+      // 回填缩略图
+      if (articleDetail.thumbnail) {
+        thumbnail.value = articleDetail.thumbnail
+      }
+    } else {
+      ElMessage.error('未获取到文章详情数据')
+    }
+  } catch (error) {
+    ElMessage.error('获取文章详情失败')
+  }
+}
+
 // 组件销毁时清理编辑器
 onBeforeUnmount(() => {
   editor.value?.destroy()
 })
 
-const handleSubmit = () => {
+const handleSubmit = async () => {
+  if (!articleTitle.value) {
+    ElMessage.warning('请输入文章标题')
+    return
+  }
+
   const content = editor.value?.getHTML()
-  console.log('文章标题:', articleTitle.value)
-  console.log('文章内容:', content)
-  // TODO: 实现发布文章的逻辑
+  if (!content || content === '<p></p>') {
+    ElMessage.warning('请输入文章内容')
+    return
+  }
+
+  const articleData: IAddArticleDto = {
+    title: articleTitle.value,
+    content: content,
+    summary: content.replace(/<[^>]+>/g, '').slice(0, 200), // 提取纯文本作为摘要
+    categoryId: 1, // 默认分类
+    thumbnail: thumbnail.value, // 使用上传的缩略图URL
+    isTop: 0,
+    status: 0, // 0表示发布
+    isComment: 1 // 默认允许评论
+  }
+
+  let success = false
+  if (articleId.value) {
+    // 如果有文章ID，说明是从草稿箱跳转过来的，调用更新文章接口
+    articleData.id = articleId.value // 添加文章ID
+    success = await articleStore.updateArticleAction(articleData)
+  } else {
+    // 否则调用新增文章接口
+    success = await articleStore.addArticleAction(articleData)
+  }
+
+  if (success) {
+    router.push('/article/draft')
+  }
 }
 
-const handleSaveDraft = () => {
+const handleSaveDraft = async () => {
+  if (!articleTitle.value) {
+    ElMessage.warning('请输入文章标题')
+    return
+  }
+
   const content = editor.value?.getHTML()
-  // TODO: 实现保存草稿的逻辑
+  // 如果内容为空或只有空段落，则传递空字符串而不是null
+  const finalContent = !content || content === '<p></p>' ? '' : content
+
+  const articleData: IAddArticleDto = {
+    title: articleTitle.value,
+    content: finalContent,
+    summary: finalContent ? finalContent.replace(/<[^>]+>/g, '').slice(0, 200) : '', // 提取纯文本作为摘要
+    categoryId: 1, // 默认分类
+    thumbnail: thumbnail.value, // 使用上传的缩略图URL
+    isTop: 0,
+    status: 1, // 1表示草稿
+    isComment: 1 // 默认允许评论
+  }
+
+  let success = false
+  if (articleId.value) {
+    // 如果有文章ID，说明是从草稿箱跳转过来的，调用更新文章接口
+    articleData.id = articleId.value // 添加文章ID
+    success = await articleStore.updateArticleAction(articleData)
+  } else {
+    // 否则调用新增草稿接口
+    success = await articleStore.addDraftArticleAction(articleData)
+  }
+
+  if (success) {
+    router.push('/article/draft')
+  }
+}
+
+const showPreview = () => {
+  previewVisible.value = true
 }
 </script>
 
@@ -310,8 +499,60 @@ const handleSaveDraft = () => {
 }
 
 .editor-header {
+  .full-width {
+    width: 100%;
+    margin: 0;
+  }
+
   .title-input {
     font-size: 24px;
+    width: 100%;
+  }
+
+  .thumbnail-upload {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    justify-content: flex-end;
+  }
+
+  .thumbnail-preview {
+    width: 120px;
+    height: 72px;
+    border: 1px solid #dcdfe6;
+    border-radius: 4px;
+    overflow: hidden;
+    position: relative;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+      .preview-hint {
+        opacity: 1;
+      }
+    }
+
+    img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .preview-hint {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      font-size: 14px;
+    }
   }
 }
 
@@ -422,5 +663,19 @@ const handleSaveDraft = () => {
   gap: 10px;
   padding-top: 20px;
   border-top: 1px solid #eee;
+}
+
+.preview-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+
+  .preview-image {
+    max-width: 100%;
+    max-height: 70vh;
+    object-fit: contain;
+  }
 }
 </style>

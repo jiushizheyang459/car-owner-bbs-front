@@ -8,7 +8,7 @@
         </div>
         <h2 class="article-title" @click="openDetail(item)">{{ item.title }}</h2>
         <div class="article-content">
-          {{ item.content }}
+          {{ stripHtml(item.content, 100) }}
         </div>
         <div class="article-actions">
           <div class="left-actions">
@@ -67,6 +67,7 @@ import useArticleStore from '@/store/article/article.ts'
 import useLikeStore from '@/store/like/like.ts'
 import useSaveStore from '@/store/save/save.ts'
 import { storeToRefs } from 'pinia'
+import { stripHtml } from '@/utils/htmlUtils'
 
 //region 分页部分
 const currentPage = ref(1)

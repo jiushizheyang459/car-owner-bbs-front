@@ -22,6 +22,9 @@ export interface IArticleDetail {
   createBy: string
   createTime: string
   viewCount: number
+  saveFlag: boolean
+  likeFlag: boolean
+  likeCount: number
 }
 
 export interface IHotArticle {
@@ -45,10 +48,33 @@ export interface INewArticle {
   favour: number
 }
 
+export interface IDraftArticle {
+  id: number
+  title: string
+  content: string
+  thumbnail: string
+  status: number
+  isComment: number
+}
+
+export interface IAddArticleDto {
+  id?: number
+  title: string
+  content: string | null
+  summary: string
+  categoryId: number
+  thumbnail: string
+  isTop: number
+  status: number
+  isComment: number
+}
+
 export interface IArticleState {
   articleList: IArticle[]
   articleTotalCount: number
   articleDetail: IArticleDetail | null
   hotArticleList: IHotArticle[]
   newArticleList: INewArticle[]
+  draftList: IDraftArticle[]
+  draftTotalCount: number
 }
