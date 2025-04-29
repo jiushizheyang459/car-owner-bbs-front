@@ -1,7 +1,7 @@
 <template>
   <div class="knowledge-container">
     <div class="operation-bar">
-      <el-button type="primary" @click="openCreateDialog"
+      <el-button type="primary" @click="openCreateDialog" v-permission="'content:knowledge:add'"
         ><el-icon> <Plus /> </el-icon>新建知识</el-button
       >
     </div>

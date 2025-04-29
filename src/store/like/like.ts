@@ -1,6 +1,6 @@
 import { defineStore } from 'pinia'
 import { toggleLike, getLikeStatus, getLikeCount } from '@/service/like/like'
-import useLoginStore from '@/store/login/login'
+import { useLoginStore } from '@/store/login/login'
 import { ElMessage } from 'element-plus'
 import { localCache } from '@/utils/cache.ts'
 

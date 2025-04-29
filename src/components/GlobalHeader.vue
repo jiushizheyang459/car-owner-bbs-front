@@ -8,15 +8,9 @@
     </el-col>
     <el-col style="flex: 1">
       <div class="menu">
-        <el-menu
-          :default-active="activeIndex"
-          class="el-menu-demo"
-          mode="horizontal"
-          @select="handleSelect"
-          router
-        >
-          <el-menu-item v-for="item in menuItems" :key="item.path" :index="item.path">
-            {{ item.label }}
+        <el-menu :default-active="activeIndex" class="el-menu-demo" mode="horizontal" @select="handleSelect" router>
+          <el-menu-item v-for="menu in menuItems" :key="menu.path" :index="menu.path">
+            {{ menu.menuName }}
           </el-menu-item>
         </el-menu>
       </div>
@@ -33,22 +27,19 @@
 import { computed } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import HeaderInfo from '@/components/HeaderInfo.vue'
+import { useLoginStore } from '@/store/login/login'
 
 const router = useRouter()
 const route = useRoute()
+const loginStore = useLoginStore()
 
 // 根据当前路由路径设置激活项
 const activeIndex = computed(() => route.path)
 
-const menuItems = [
-  { path: '/index', label: '首页' },
-  { path: '/article', label: '文章' },
-  { path: '/information', label: '资讯' },
-  // { path: '/trading', label: '交易' },
-  { path: '/knowledge', label: '知识' },
-  { path: '/event', label: '活动' },
-  { path: '/friendly', label: '友情链接' }
-]
+// 获取菜单项
+const menuItems = computed(() => {
+  return loginStore.menus.filter((menu) => menu.menuType === 'M' && menu.visible === '0')
+})
 
 // 处理菜单选择事件
 const handleSelect = (path: string) => {
@@ -58,24 +49,30 @@ const handleSelect = (path: string) => {
 
 <style lang="less" scoped>
 .no-wrap {
-  flex-wrap: nowrap; /* 防止换行 */
+  flex-wrap: nowrap;
+  /* 防止换行 */
 }
+
 .title-bar {
   display: flex;
   align-items: center;
   white-space: nowrap;
 }
+
 .logo {
   height: 48px;
 }
+
 .title {
   margin-left: 16px;
   font-size: 18px;
   color: black;
 }
+
 .user-login-status {
   text-align: right;
 }
+
 .el-menu--horizontal.el-menu {
   border-bottom: none;
 }

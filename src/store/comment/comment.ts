@@ -2,7 +2,7 @@ import { defineStore } from 'pinia'
 import { getCommentList, addComment } from '@/service/comment/comment'
 import type { ICommentState } from './type'
 import { ElMessage } from 'element-plus'
-import useLoginStore from '@/store/login/login'
+import { useLoginStore } from '@/store/login/login'
 
 const useCommentStore = defineStore('comment', {
   state: (): ICommentState => ({

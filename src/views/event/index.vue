@@ -22,7 +22,7 @@
         </div>
 
         <div class="operation-bar">
-          <el-button type="primary" @click="openCreateDialog">
+          <el-button type="primary" @click="openCreateDialog" v-permission="'content:event:add'">
             <el-icon> <Plus /> </el-icon>新建活动
           </el-button>
         </div>
