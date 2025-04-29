@@ -1,9 +1,9 @@
 <template>
   <div class="information-container">
     <div class="operation-bar">
-      <el-button type="primary" @click="openCreateDialog" v-permission="'content:information:add'">
-        <el-icon> <Plus /> </el-icon>新建资讯
-      </el-button>
+      <el-button type="primary" @click="openCreateDialog"
+        ><el-icon> <Plus /> </el-icon>新建资讯</el-button
+      >
     </div>
     <el-row>
       <el-col :span="4" class="timeline-col">

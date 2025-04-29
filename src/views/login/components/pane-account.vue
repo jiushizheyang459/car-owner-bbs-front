@@ -21,7 +21,7 @@
 <script setup lang="ts">
 import { reactive, ref } from 'vue'
 import type { FormRules, ElForm } from 'element-plus'
-import { useLoginStore } from '@/store/login/login.ts'
+import useLoginStore from '@/store/login/login.ts'
 import type { IAccount } from '@/types'
 import { localCache } from '@/utils/cache.ts'
 
@@ -37,7 +37,7 @@ const account = reactive<IAccount>({
 const accountRules = reactive<FormRules<RuleForm>>({
   userName: [
     { required: true, message: '请输入账号', trigger: 'blur' },
-    { min: 6, max: 12, message: '必须是6到12位的长度', trigger: 'blur' }
+    { min: 2, max: 10, message: '必须是2到10位的长度', trigger: 'blur' }
   ],
   password: [
     { required: true, message: '请输入密码', trigger: 'blur' },

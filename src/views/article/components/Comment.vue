@@ -30,30 +30,17 @@
 
         <!-- 递归显示回复 -->
         <div v-if="comment.children && comment.children.length > 0" class="reply-list">
-          <CommentItem
-            v-for="reply in comment.children"
-            :key="reply.id"
-            :comment="reply"
-            :parent-comment="comment"
-            :article-id="articleId"
-            :article-author="articleAuthor"
-            @reply="handleReply"
-          />
+          <CommentItem v-for="reply in comment.children" :key="reply.id" :comment="reply" :parent-comment="comment"
+            :article-id="articleId" :article-author="articleAuthor" @reply="handleReply" />
         </div>
       </div>
     </div>
 
     <!-- 分页 -->
     <div class="pagination">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[5, 10, 20]"
-        layout="total, sizes, prev, pager, next"
-        :total="total"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[5, 10, 20]"
+        layout="total, sizes, prev, pager, next" :total="total" @size-change="handleSizeChange"
+        @current-change="handleCurrentChange" />
     </div>
 
     <!-- 回复对话框 -->
@@ -73,7 +60,7 @@
 import { ref, onMounted, computed } from 'vue'
 import useCommentStore from '@/store/comment/comment'
 import { storeToRefs } from 'pinia'
-import { useLoginStore } from '@/store/login/login'
+import useLoginStore from '@/store/login/login'
 import useArticleStore from '@/store/article/article'
 import CommentItem from './CommentItem.vue'
 

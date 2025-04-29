@@ -1,7 +1,7 @@
 <template>
   <div class="friendly-container">
     <div class="operation-bar">
-      <el-button type="primary" @click="openCreateDialog" v-permission="'content:link:add'">
+      <el-button type="primary" @click="openCreateDialog">
         <el-icon> <Plus /> </el-icon>新建链接
       </el-button>
     </div>
@@ -29,13 +29,7 @@
         </el-table-column>
         <el-table-column label="操作" width="120" fixed="right">
           <template #default="{ row }">
-            <el-button
-              type="danger"
-              size="small"
-              @click="handleDelete(row)"
-              v-permission="'content:link:delete'"
-              >删除</el-button
-            >
+            <el-button type="danger" size="small" @click="handleDelete(row)">删除</el-button>
           </template>
         </el-table-column>
       </el-table>
