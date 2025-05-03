@@ -6,8 +6,10 @@
       <span>发布时间: {{ articleDetail?.createTime }}</span>
       <span>浏览量: {{ articleDetail?.viewCount }}</span>
       <span class="save-action" @click="toggleSave">
-        <img :src="articleDetail?.saveFlag ? 'src/assets/icon/收藏.svg' : 'src/assets/icon/save.svg'"
-          class="action-icon" />
+        <img
+          :src="articleDetail?.saveFlag ? 'src/assets/icon/save-fill.svg' : 'src/assets/icon/save.svg'"
+          class="action-icon"
+        />
       </span>
     </div>
     <div class="article-content prose" v-html="articleDetail?.content"></div>
@@ -16,11 +18,11 @@
     <div class="article-actions">
       <div class="like-container">
         <div class="like-button" @click="toggleLike">
-          <img :src="articleDetail?.likeFlag ? 'src/assets/icon/点赞.svg' : 'src/assets/icon/favour.svg'
-            " class="action-icon large-icon" />
-          <span :class="articleDetail?.likeFlag ? 'likeNum' : ''">{{
-            articleDetail?.likeCount
-            }}</span>
+          <img
+            :src="articleDetail?.likeFlag ? 'src/assets/icon/like-fill.svg' : 'src/assets/icon/like.svg'"
+            class="action-icon large-icon"
+          />
+          <span :class="articleDetail?.likeFlag ? 'likeNum' : ''">{{ articleDetail?.likeCount }}</span>
         </div>
       </div>
     </div>

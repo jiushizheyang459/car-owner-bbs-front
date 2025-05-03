@@ -1,9 +1,9 @@
 <template>
   <div class="information-container">
     <div class="operation-bar">
-      <el-button type="primary" @click="openCreateDialog"
-        ><el-icon> <Plus /> </el-icon>新建资讯</el-button
-      >
+      <el-button type="primary" @click="openCreateDialog" v-permission="'content:information:add'">
+        <el-icon> <Plus /> </el-icon>新建资讯
+      </el-button>
     </div>
     <el-row>
       <el-col :span="4" class="timeline-col">
@@ -35,15 +35,14 @@
               class="news-item"
               :ref="
                 (el) => {
-                  if (el)
-                    newsItemRefs[`${item.createDate}-${item.createTime}`] = el as HTMLDivElement
+                  if (el) newsItemRefs[`${item.createDate}-${item.createTime}`] = el as HTMLDivElement
                 }
               "
               :data-date="item.createDate"
               :data-time="item.createTime"
             >
               <div class="news-time">
-                <span class="news-date">{{ formatDate(item.createDate) }}</span>
+                <span class="news-date">{{ formatDisplayDate(item.createDate) }}</span>
                 <span class="news-hour">{{ item.createTime }}</span>
               </div>
               <div class="news-title">{{ item.title }}</div>
@@ -64,12 +63,7 @@
           <el-input v-model="newInformation.title" placeholder="请输入资讯标题" />
         </el-form-item>
         <el-form-item label="内容">
-          <el-input
-            v-model="newInformation.content"
-            type="textarea"
-            :rows="4"
-            placeholder="请输入资讯内容"
-          />
+          <el-input v-model="newInformation.content" type="textarea" :rows="4" placeholder="请输入资讯内容" />
         </el-form-item>
         <el-form-item label="缩略图">
           <el-upload
@@ -103,6 +97,7 @@ import { Loading, Plus } from '@element-plus/icons-vue'
 import useInformationStore from '@/store/information/information.ts'
 import { storeToRefs } from 'pinia'
 import { uploadImage } from '@/service/information/information.ts'
+import { formatDate, getWeekday } from '@/utils/date'
 
 const containerRef = ref<HTMLElement | null>(null)
 const newsListRef = ref<HTMLElement | null>(null)
@@ -227,8 +222,7 @@ const scrollToDate = (date: string) => {
     if (targetElement) {
       // 计算目标位置，确保文章在视口中心
       const containerHeight = containerRef.value.clientHeight
-      const targetTop =
-        targetElement.offsetTop - containerHeight / 2 + targetElement.offsetHeight / 2
+      const targetTop = targetElement.offsetTop - containerHeight / 2 + targetElement.offsetHeight / 2
 
       containerRef.value.scrollTo({
         top: targetTop,
@@ -305,7 +299,7 @@ const generateTimelineData = () => {
     .reverse()
     .map((date) => {
       const [year, month, day] = date.split('-')
-      const weekday = new Date(date).toLocaleDateString('zh-CN', { weekday: 'long' })
+      const weekday = getWeekday(date)
       return {
         month,
         day,
@@ -329,12 +323,12 @@ watch(
 )
 
 // 格式化日期显示
-const formatDate = (dateStr: string) => {
+const formatDisplayDate = (dateStr: string) => {
   const date = new Date(dateStr)
   const year = date.getFullYear()
   const month = (date.getMonth() + 1).toString().padStart(2, '0')
   const day = date.getDate().toString().padStart(2, '0')
-  const weekday = date.toLocaleDateString('zh-CN', { weekday: 'long' })
+  const weekday = getWeekday(dateStr)
   return `${year}年${month}月${day}日 ${weekday}`
 }
 </script>
@@ -344,7 +338,7 @@ const formatDate = (dateStr: string) => {
   width: 1000px;
   margin: 0 auto;
   position: relative;
-  height: calc(100vh - 200px); // 调整合适的高度
+  height: calc(100vh - 120px); // 调整高度，减去 header 和操作栏的高度
 
   .operation-bar {
     margin-bottom: 20px;
@@ -360,12 +354,11 @@ const formatDate = (dateStr: string) => {
   .timeline-wrapper {
     position: fixed;
     width: inherit;
-    max-width: calc(1000px * 4 / 24); // 计算固定宽度，4/24 是 span 的比例
+    max-width: calc(1000px * 4 / 24);
     padding: 20px;
-    height: calc(100vh - 200px);
+    height: calc(100vh - 120px); // 调整高度，与容器保持一致
     overflow-y: auto;
 
-    // 隐藏滚动条但保持功能
     &::-webkit-scrollbar {
       width: 0;
       height: 0;
@@ -373,7 +366,7 @@ const formatDate = (dateStr: string) => {
   }
 
   .news-container {
-    height: calc(100vh - 200px);
+    height: calc(100vh - 120px); // 调整高度，与容器保持一致
     overflow-y: auto;
     padding: 20px;
 

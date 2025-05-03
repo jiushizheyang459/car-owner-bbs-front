@@ -3,7 +3,7 @@
     <div class="creator card">
       <div class="creator-header">
         <div class="creator-title">
-          <img src="@/assets/icon/creator.svg" alt="creator" />
+          <img src="../../../assets/icon/creator.svg" alt="creator" />
           <span>创作中心</span>
         </div>
         <!--        <div class="creator-checkIn">-->
@@ -13,9 +13,17 @@
       </div>
       <div class="creator-body">
         <el-row :gutter="20">
-          <el-col :span="12" v-for="(item, index) in creatorItems" :key="index">
-            <div class="creator-item" :class="{ 'first-item': index === 0, 'second-item': index === 1 }"
-              @click="handleCreateClick(item)">
+          <el-col
+            :span="12"
+            v-for="(item, index) in creatorItems"
+            :key="index"
+            v-permission="getButtonPermission(item)"
+          >
+            <div
+              class="creator-item"
+              :class="{ 'first-item': index === 0, 'second-item': index === 1 }"
+              @click="handleCreateClick(item)"
+            >
               <img :src="item.icon" alt="" />
               <p>{{ item.text }}</p>
             </div>
@@ -33,7 +41,7 @@
     <div class="suggested-follows card">
       <div class="follows-header">
         <div class="follows-title">
-          <img src="@/assets/icon/follow.svg" alt="" />
+          <img src="../../../assets/icon/follow.svg" alt="" />
           <span>推荐关注</span>
         </div>
       </div>
@@ -46,12 +54,16 @@
                 <div class="follows-head">{{ user.nickName }}</div>
                 <div class="follows-detail">你可能感兴趣</div>
               </div>
-              <el-button class="follows-button" :class="{ 'is-followed': followStatus[user.id] }" type="text"
-                @click="handleFollowClick(user.id)">
-                <img :src="followStatus[user.id]
-                    ? 'src/assets/icon/reduction.svg'
-                    : 'src/assets/icon/add.svg'
-                  " alt="" />
+              <el-button
+                class="follows-button"
+                :class="{ 'is-followed': followStatus[user.id] }"
+                type="text"
+                @click="handleFollowClick(user.id)"
+              >
+                <img
+                  :src="followStatus[user.id] ? 'src/assets/icon/reduction.svg' : 'src/assets/icon/add.svg'"
+                  alt=""
+                />
                 <span>{{ followStatus[user.id] ? '已关注' : '关注' }}</span>
               </el-button>
             </div>
@@ -68,28 +80,43 @@ import { useRouter } from 'vue-router'
 import useFollowStore from '@/store/follows/follows.ts'
 import { storeToRefs } from 'pinia'
 import useAdvStore from '@/store/advertisement/advertisement.ts'
+import useLoginStore from '@/store/login/login'
 
 // 定义创作中心的数据
 const creatorItems = ref([
   {
     icon: 'src/assets/icon/create.svg',
-    text: '写文章'
+    text: '写文章',
+    permission: 'content:article:add'
   },
   {
     icon: 'src/assets/icon/edit.svg',
-    text: '草稿箱'
+    text: '草稿箱',
+    permission: 'content:article:add'
   }
 ])
 
 // 获取推荐关注的数据
 const followStore = useFollowStore()
 const advStore = useAdvStore()
+const loginStore = useLoginStore()
+
+const advPage = ref(1)
+const advPageSize = ref(5)
+
 followStore.getRecommendedUsersAction()
-advStore.getAdvertisementAction()
+advStore.getAdvertisementListAction(advPage.value, advPageSize.value)
+
 const { recommendedUsers, followStatus } = storeToRefs(followStore)
 const { advertisementList } = storeToRefs(advStore)
 
 const router = useRouter()
+
+// 根据按钮类型返回对应的权限标识
+const getButtonPermission = (item: any): string => {
+  console.log('item.permission', item.permission)
+  return item.permission
+}
 
 const handleCreateClick = (item: any) => {
   if (item.text === '写文章') {

@@ -1,25 +1,47 @@
 import { defineStore } from 'pinia'
-import { addFollow, deleteFollow, getRecommendedUsers } from '@/service/follows/follows'
+import {
+  addFollow,
+  deleteFollow,
+  getFollowUsers,
+  getRecommendedUsers
+} from '@/service/follows/follows'
 import type { IFollowState } from './type'
 import { ElMessage } from 'element-plus'
 
 const useFollowStore = defineStore('follows', {
   state: (): IFollowState => ({
     followStatus: {},
-    recommendedUsers: []
+    recommendedUsers: [],
+    followList: []
   }),
   actions: {
-    toggleFollowAction(userId: number) {
-      if (this.followStatus[userId]) {
-        deleteFollow(userId).then(() => {
+    async toggleFollowAction(userId: number) {
+      try {
+        if (this.followStatus[userId]) {
+          // 取消关注
+          await deleteFollow(userId)
           this.followStatus[userId] = false
+
+          // 从关注列表中移除该用户
+          this.followList = this.followList.filter((item) => item.followedId !== userId)
+
           ElMessage.success('已取消关注')
-        })
-      } else {
-        addFollow(userId).then(() => {
+          return true
+        } else {
+          // 添加关注
+          await addFollow(userId)
           this.followStatus[userId] = true
+
+          // 重新获取关注列表（或者可以直接将用户添加到列表中）
+          await this.getFollowAction()
+
           ElMessage.success('关注成功')
-        })
+          return true
+        }
+      } catch (error) {
+        console.error('关注操作失败:', error)
+        ElMessage.error('操作失败，请稍后重试')
+        return false
       }
     },
     async getRecommendedUsersAction() {
@@ -29,6 +51,10 @@ const useFollowStore = defineStore('follows', {
       this.recommendedUsers.forEach((user) => {
         this.followStatus[user.id] = user.followsFlag
       })
+    },
+    async getFollowAction() {
+      const result = await getFollowUsers()
+      this.followList = result.data.data
     }
   }
 })

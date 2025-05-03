@@ -6,23 +6,24 @@ import type { ISaveState } from './type'
 const useSaveStore = defineStore('save', {
   state: (): ISaveState => ({
     saveList: [],
-    total: 0
+    saveTotalCount: 0
   }),
   actions: {
     // 获取收藏列表
     async getSaveListAction(pageNum: number, size: number) {
-      const res = await getSaveList(pageNum, size)
-      if (res.code === 200) {
-        this.saveList = res.data.records
-        this.total = res.data.total
+      const saveListResult = await getSaveList(pageNum, size)
+      if (saveListResult.data.code === 200) {
+        const { totalCount, rows } = saveListResult.data.data
+        this.saveList = rows
+        this.saveTotalCount = totalCount
       } else {
         ElMessage.error('获取收藏列表失败')
       }
     },
     // 添加收藏
     async addSaveAction(articleId: number) {
-      const res = await addSave(articleId)
-      if (res.data.code === 200) {
+      const addSaveResult = await addSave(articleId)
+      if (addSaveResult.data.code === 200) {
         ElMessage.success('收藏成功')
         return true
       } else {
@@ -32,8 +33,8 @@ const useSaveStore = defineStore('save', {
     },
     // 取消收藏
     async deleteSaveAction(articleId: number) {
-      const res = await deleteSave(articleId)
-      if (res.data.code === 200) {
+      const deleteSaveResult = await deleteSave(articleId)
+      if (deleteSaveResult.data.code === 200) {
         ElMessage.success('取消收藏成功')
         return true
       } else {

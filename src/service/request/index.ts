@@ -1,13 +1,16 @@
 import axios from 'axios'
-import type { AxiosInStance, AxiosRequestConfig, AxiosResponse } from 'axios'
-import type { HYRequestConfig } from './type'
+import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import type { HYRequestConfig, HYRequestInterceptors } from './type'
 
 class HYRequest {
-  instance: AxiosInStance
+  instance: AxiosInstance
+  private readonly interceptors?: HYRequestInterceptors
 
   constructor(config: HYRequestConfig) {
     this.instance = axios.create(config)
+    this.interceptors = config.interceptors
 
+    // 全局请求拦截器
     this.instance.interceptors.request.use(
       (config) => {
         console.log('全局请求成功的拦截')
@@ -15,35 +18,45 @@ class HYRequest {
       },
       (err) => {
         console.log('全局响应失败的拦截')
+        return Promise.reject(err)
       }
     )
 
-    this.instance.interceptors.request.use(
-      config.interceptors?.requestSuccessFn,
-      config.interceptors?.requestFailureFn
-    )
-    this.instance.interceptors.response.use(
-      config.interceptors?.requestSuccessFn,
-      config.interceptors?.requestFailureFn
-    )
+    // 实例请求拦截器
+    if (this.interceptors?.requestSuccessFn) {
+      this.instance.interceptors.request.use((config) => this.interceptors?.requestSuccessFn?.(config) || config)
+    }
+    if (this.interceptors?.requestFailureFn) {
+      this.instance.interceptors.request.use(undefined, this.interceptors.requestFailureFn)
+    }
+
+    // 实例响应拦截器
+    if (this.interceptors?.responseSuccessFn) {
+      this.instance.interceptors.response.use(this.interceptors.responseSuccessFn)
+    }
+    if (this.interceptors?.responseFailureFn) {
+      this.instance.interceptors.response.use(undefined, this.interceptors.responseFailureFn)
+    }
   }
 
   request<T = any>(config: HYRequestConfig<T>) {
-    //  单次清求的威功拦截处型
-    if (config.intercepiors?.requestSuccessFn) {
-      config = config.interceptors.requestSuccessFn(config)
+    // 单次请求的成功拦截处理
+    if (config.interceptors?.requestSuccessFn) {
+      config = config.interceptors.requestSuccessFn(config as InternalAxiosRequestConfig)
     }
 
-    //  返回Promise
+    // 返回Promise
     return new Promise<T>((resolve, reject) => {
       this.instance
         .request<any, T>(config)
         .then((res) => {
-          //  单次响应的成功拦截处理
+          // 单次响应的成功拦截处理
           if (config.interceptors?.responseSuccessFn) {
-            res = config.interceptors.responseSuccessFn(res)
+            const response = config.interceptors.responseSuccessFn(res as AxiosResponse<T>)
+            resolve(response.data)
+          } else {
+            resolve(res)
           }
-          resolve(res)
         })
         .catch((err) => {
           reject(err)

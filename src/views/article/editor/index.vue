@@ -3,12 +3,7 @@
     <div class="editor-header">
       <el-row :gutter="20" align="middle" class="full-width">
         <el-col :span="16">
-          <el-input
-            v-model="articleTitle"
-            placeholder="请输入文章标题"
-            class="title-input"
-            size="large"
-          />
+          <el-input v-model="articleTitle" placeholder="请输入文章标题" class="title-input" size="large" />
         </el-col>
         <el-col :span="8">
           <div class="thumbnail-upload">
@@ -29,7 +24,7 @@
             @click="editor?.chain().focus().toggleBold().run()"
             :class="{ 'is-active': editor?.isActive('bold') }"
           >
-            <img src="@/assets/icon/edit_icon/bold.svg" class="icon-btn" />
+            <img src="@/assets/icon/edit-icon/bold.svg" class="icon-btn" />
           </el-button>
         </el-tooltip>
         <!-- 斜体 -->
@@ -38,7 +33,7 @@
             @click="editor?.chain().focus().toggleItalic().run()"
             :class="{ 'is-active': editor?.isActive('italic') }"
           >
-            <img src="@/assets/icon/edit_icon/italics.svg" class="icon-btn" />
+            <img src="@/assets/icon/edit-icon/italics.svg" class="icon-btn" />
           </el-button>
         </el-tooltip>
         <!-- 下划线 -->
@@ -47,7 +42,7 @@
             @click="editor?.chain().focus().toggleUnderline().run()"
             :class="{ 'is-active': editor?.isActive('underline') }"
           >
-            <img src="@/assets/icon/edit_icon/underline.svg" class="icon-btn" />
+            <img src="@/assets/icon/edit-icon/underline.svg" class="icon-btn" />
           </el-button>
         </el-tooltip>
         <!-- 删除线 -->
@@ -56,7 +51,7 @@
             @click="editor?.chain().focus().toggleStrike().run()"
             :class="{ 'is-active': editor?.isActive('strike') }"
           >
-            <img src="@/assets/icon/edit_icon/stripper.svg" class="icon-btn" />
+            <img src="@/assets/icon/edit-icon/stripper.svg" class="icon-btn" />
           </el-button>
         </el-tooltip>
       </el-button-group>
@@ -98,7 +93,7 @@
         <el-tooltip content="字体颜色" placement="top">
           <el-color-picker v-model="textColor" show-alpha @change="setTextColor">
             <el-button>
-              <img src="@/assets/icon/edit_icon/fontColor.svg" class="icon-btn" />
+              <img src="@/assets/icon/edit-icon/fontColor.svg" class="icon-btn" />
             </el-button>
           </el-color-picker>
         </el-tooltip>
@@ -110,13 +105,13 @@
         <!-- 插入图片 -->
         <el-tooltip content="插入图片" placement="top">
           <el-button @click="handleImageUpload">
-            <img src="@/assets/icon/edit_icon/insertImage.svg" class="icon-btn" />
+            <img src="@/assets/icon/edit-icon/insertImage.svg" class="icon-btn" />
           </el-button>
         </el-tooltip>
         <!-- 插入链接 -->
         <el-tooltip content="插入链接" placement="top">
           <el-button @click="handleInsertLink">
-            <img src="@/assets/icon/edit_icon/links.svg" class="icon-btn" />
+            <img src="@/assets/icon/edit-icon/links.svg" class="icon-btn" />
           </el-button>
         </el-tooltip>
         <!-- 插入引用 -->
@@ -125,13 +120,13 @@
             @click="editor?.chain().focus().toggleBlockquote().run()"
             :class="{ 'is-active': editor?.isActive('quote') }"
           >
-            <img src="@/assets/icon/edit_icon/quote.svg" class="icon-btn" />
+            <img src="@/assets/icon/edit-icon/quote.svg" class="icon-btn" />
           </el-button>
         </el-tooltip>
         <!-- 插入分割线 -->
         <el-tooltip content="插入分割线" placement="top">
           <el-button @click="editor?.chain().focus().setHorizontalRule().run()">
-            <img src="@/assets/icon/edit_icon/divisionLine.svg" class="icon-btn" />
+            <img src="@/assets/icon/edit-icon/divisionLine.svg" class="icon-btn" />
           </el-button>
         </el-tooltip>
       </el-button-group>
@@ -142,8 +137,8 @@
     </div>
 
     <div class="editor-footer">
-      <el-button type="primary" @click="handleSubmit">发布文章</el-button>
-      <el-button @click="handleSaveDraft">保存草稿</el-button>
+      <el-button type="primary" @click="handleSubmit" v-permission="'content:article:add'">发布文章</el-button>
+      <el-button @click="handleSaveDraft" v-permission="'content:article:add'">保存草稿</el-button>
     </div>
 
     <!-- 插入链接的对话框 -->
@@ -186,6 +181,7 @@ import Placeholder from '@tiptap/extension-placeholder'
 import { useRouter, useRoute } from 'vue-router'
 import useArticleStore from '@/store/article/article'
 import useUploadStore from '@/store/upload/upload'
+import useLoginStore from '@/store/login/login'
 import { ElMessage } from 'element-plus'
 import type { IAddArticleDto } from '@/store/article/type'
 
@@ -193,6 +189,7 @@ const router = useRouter()
 const route = useRoute()
 const articleStore = useArticleStore()
 const uploadStore = useUploadStore()
+const loginStore = useLoginStore()
 
 const articleTitle = ref('')
 const textColor = ref('')
@@ -302,10 +299,7 @@ const confirmInsertLink = () => {
     const safeFrom = from ?? 0
     const safeTo = to ?? safeFrom // 避免 undefined，默认等于 safeFrom
 
-    const text =
-      linkForm.value.text ||
-      editor.value?.state.doc.textBetween(safeFrom, safeTo, '') ||
-      linkForm.value.url
+    const text = linkForm.value.text || editor.value?.state.doc.textBetween(safeFrom, safeTo, '') || linkForm.value.url
 
     // 确保链接以 http:// 或 https:// 开头
     let url = linkForm.value.url

@@ -86,17 +86,27 @@ const router = createRouter({
           path: '/friendly',
           name: 'friendly',
           component: () => import('../views/friendly/index.vue')
+        },
+        {
+          path: '/user/userInfo',
+          name: 'userInfo',
+          component: () => import('../views/user/info.vue')
+        },
+        {
+          path: '/advertisement',
+          name: 'advertisement',
+          component: () => import('../views/advertisement/index.vue')
+        },
+        {
+          path: '/announcement',
+          name: 'announcement',
+          component: () => import('../views/announcement/index.vue')
         }
         /*
         {
           path: '/main/trading',
           name: 'trading',
           component: () => import('../views/trading/info.vue')
-        },
-        {
-          path: '/main/event',
-          name: 'event',
-          component: () => import('../views/event/info.vue')
         },
         */
       ]

@@ -23,3 +23,9 @@ export function getRecommendedUsers() {
     url: '/follows/recommendFollowsList'
   })
 }
+
+export function getFollowUsers() {
+  return hyRequest.get({
+    url: '/follows'
+  })
+}

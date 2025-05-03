@@ -12,24 +12,22 @@
           </template>
           <pane-account ref="accountRef" />
         </el-tab-pane>
-        <el-tab-pane name="phone">
-          <template #label>
-            <div class="label">
-              <el-icon><Cellphone /></el-icon>
-              <span class="text">手机登录</span>
-            </div>
-          </template>
-          <pane-phone />
-        </el-tab-pane>
+        <!--        <el-tab-pane name="phone">-->
+        <!--          <template #label>-->
+        <!--            <div class="label">-->
+        <!--              <el-icon><Cellphone /></el-icon>-->
+        <!--              <span class="text">手机登录</span>-->
+        <!--            </div>-->
+        <!--          </template>-->
+        <!--          <pane-phone />-->
+        <!--        </el-tab-pane>-->
       </el-tabs>
     </div>
     <div class="controls">
       <el-checkbox v-model="isRemPwd" label="记住密码" size="large" />
       <el-link type="primary" :underline="false">忘记密码</el-link>
     </div>
-    <el-button class="login-button" type="primary" size="large" @click="handleLoginBtnClick"
-      >登录</el-button
-    >
+    <el-button class="login-button" type="primary" size="large" @click="handleLoginBtnClick">登录</el-button>
   </div>
 </template>
 

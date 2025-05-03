@@ -15,17 +15,17 @@
             <ul>
               <li @click="toggleLike(item)">
                 <img
-                  :src="item.likeFlag ? 'src/assets/icon/点赞.svg' : 'src/assets/icon/favour.svg'"
+                  :src="item.likeFlag ? 'src/assets/icon/like-fill.svg' : 'src/assets/icon/like.svg'"
                   class="action-icon"
                 />
                 <span :class="item.likeFlag ? 'likeNum' : ''">{{ item.likeCount }}</span>
               </li>
               <li>
-                <img src="@/assets/icon/comment.svg" />
+                <img src="../../../assets/icon/comment.svg" />
                 {{ item.commentCount }}
               </li>
               <li>
-                <img src="@/assets/icon/view.svg" />
+                <img src="../../../assets/icon/view.svg" />
                 {{ item.viewCount }}
               </li>
             </ul>
@@ -34,7 +34,7 @@
             <ul>
               <li @click="toggleSave(item)">
                 <img
-                  :src="item.saveFlag ? 'src/assets/icon/收藏.svg' : 'src/assets/icon/save.svg'"
+                  :src="item.saveFlag ? 'src/assets/icon/save-fill.svg' : 'src/assets/icon/save.svg'"
                   class="action-icon"
                 />
               </li>

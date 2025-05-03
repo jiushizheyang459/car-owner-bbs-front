@@ -22,7 +22,7 @@
         </div>
 
         <div class="operation-bar">
-          <el-button type="primary" @click="openCreateDialog">
+          <el-button type="primary" @click="openCreateDialog" v-permission="'content:event:add'">
             <el-icon> <Plus /> </el-icon>新建活动
           </el-button>
         </div>
@@ -133,12 +133,7 @@
           <el-input v-model="newEvent.title" placeholder="请输入活动标题" />
         </el-form-item>
         <el-form-item label="内容" prop="content">
-          <el-input
-            v-model="newEvent.content"
-            type="textarea"
-            :rows="4"
-            placeholder="请输入活动内容"
-          />
+          <el-input v-model="newEvent.content" type="textarea" :rows="4" placeholder="请输入活动内容" />
         </el-form-item>
         <el-form-item label="缩略图">
           <el-upload
@@ -276,9 +271,7 @@ const submitEvent = async () => {
     if (valid) {
       try {
         // 将日期时间字符串转换为时间戳
-        const startTime = newEvent.value.startTime
-          ? new Date(newEvent.value.startTime).getTime()
-          : 0
+        const startTime = newEvent.value.startTime ? new Date(newEvent.value.startTime).getTime() : 0
         const endTime = newEvent.value.endTime ? new Date(newEvent.value.endTime).getTime() : 0
 
         // 调用 store 中的 action 创建资讯
@@ -317,28 +310,6 @@ const submitEvent = async () => {
     }
   })
 }
-
-const events = ref([
-  {
-    id: 1,
-    title: '基于学习的参数化查询优化方法',
-    date: '2024-1-30 19:30',
-    type: '线上活动',
-    category: '不限',
-    status: '正在进行',
-    image: 'src/assets/avatar/beibei.png'
-  },
-  {
-    id: 2,
-    title: '2024 百度智能云千帆杯AI原生应用开发挑战赛',
-    date: '2024-1-26 22:26',
-    type: '线上活动',
-    category: '不限',
-    status: '已结束',
-    image: 'src/assets/avatar/beibei.png'
-  }
-  // 可以添加更多活动数据
-])
 </script>
 
 <style scoped lang="less">
@@ -467,8 +438,8 @@ const events = ref([
     text-align: center;
     line-height: 120px;
   }
+
   .pagination {
-    margin-left: 20px;
     margin-bottom: 20px;
   }
 }

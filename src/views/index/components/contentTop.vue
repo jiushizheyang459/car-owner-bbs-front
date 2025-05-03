@@ -17,7 +17,7 @@
       <el-card class="creator">
         <div class="creator-header">
           <div class="creator-title">
-            <img src="@/assets/icon/greeting.svg" alt="greeting" />
+            <img src="../../../assets/icon/greeting.svg" alt="greeting" />
             <span>{{ greeting }}</span>
           </div>
           <!--          <div class="creator-checkIn">-->
@@ -36,7 +36,7 @@
       </el-card>
       <el-card class="message">
         <div class="message-title">
-          <img src="@/assets/icon/announcement.svg" alt="announcement" />
+          <img src="../../../assets/icon/announcement.svg" alt="announcement" />
           <span>公告</span>
         </div>
         <el-divider />
@@ -63,14 +63,20 @@
 import useAnnouncementStore from '@/store/announcement/announcement.ts'
 import useAdvStore from '@/store/advertisement/advertisement.ts'
 import { storeToRefs } from 'pinia'
-import { computed, onMounted } from 'vue'
+import { computed, onMounted, ref } from 'vue'
+
+const advPage = ref(1)
+const advPageSize = ref(5)
+
+const announcementPage = ref(1)
+const announcementPageSize = ref(4)
 
 const announcementStore = useAnnouncementStore()
 const advStore = useAdvStore()
 
 onMounted(() => {
-  announcementStore.getAnnouncementListAction()
-  advStore.getAdvertisementAction()
+  announcementStore.getDisplayAnnouncementListAction(announcementPage.value, announcementPageSize.value)
+  advStore.getDisplayAdvertisementListAction(advPage.value, advPageSize.value)
 })
 
 const { announcementList } = storeToRefs(announcementStore)

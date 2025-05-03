@@ -11,11 +11,7 @@
         <div class="card">
           <el-row>
             <el-col style="margin-top: 10px" v-for="item in hotArticleList" :key="item.id">
-              <el-card
-                class="box-card"
-                shadow="hover"
-                :body-style="{ padding: '0', height: '100%' }"
-              >
+              <el-card class="box-card" shadow="hover" :body-style="{ padding: '0', height: '100%' }">
                 <el-row style="height: 100%">
                   <el-col class="article-img" :span="5">
                     <el-image style="height: 100%; width: 100%" :src="item.thumbnail" fit="cover" />
@@ -23,19 +19,13 @@
                   <el-col :span="19" class="content-wrapper">
                     <el-row class="article-body" justify="space-between">
                       <el-col>
-                        <div
-                          style="display: flex; align-items: center; justify-content: flex-start"
-                        >
+                        <div style="display: flex; align-items: center; justify-content: flex-start">
                           <el-avatar size="small" :src="item.avatar" />
-                          <el-text class="mx-1 author-text" size="large" tag="b">{{
-                            item.nickName
-                          }}</el-text>
+                          <el-text class="mx-1 author-text" size="large" tag="b">{{ item.nickName }}</el-text>
                         </div>
                       </el-col>
                       <el-col style="margin-top: 5px">
-                        <el-text class="mx-1 title-text" size="large" tag="b">{{
-                          item.title
-                        }}</el-text>
+                        <el-text class="mx-1 title-text" size="large" tag="b">{{ item.title }}</el-text>
                       </el-col>
                       <el-col style="margin-top: 5px; flex-grow: 1">
                         <el-text class="mx-1 content-text" size="large" tag="p">{{
@@ -56,7 +46,7 @@
             <el-text class="mx-1" size="large" tag="b">最新文章</el-text>
             <el-divider />
             <el-row>
-              <el-col style="margin-bottom: 15px; margin-top: 1px" v-for="item in newArticleList">
+              <el-col style="margin-bottom: 15px; margin-top: 1px" :key="item.id" v-for="item in newArticleList">
                 <div class="title">
                   <el-text class="mx-1" size="large" tag="b">{{ item.title }}</el-text>
                 </div>
@@ -69,11 +59,7 @@
                   </el-col>
                   <el-col :span="6">
                     <div style="display: flex; align-items: center; justify-content: flex-end">
-                      <el-image
-                        style="width: 24px; height: 24px"
-                        src="src/assets/icon/favour.svg"
-                        fit="fill"
-                      />
+                      <el-image style="width: 24px; height: 24px" src="src/assets/icon/like.svg" fit="fill" />
                       <span style="font-size: 12px">{{ item.favour }}</span>
                     </div>
                   </el-col>

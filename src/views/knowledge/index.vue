@@ -1,7 +1,7 @@
 <template>
   <div class="knowledge-container">
     <div class="operation-bar">
-      <el-button type="primary" @click="openCreateDialog"
+      <el-button type="primary" @click="openCreateDialog" v-permission="'content:knowledge:add'"
         ><el-icon> <Plus /> </el-icon>新建知识</el-button
       >
     </div>
@@ -27,9 +27,7 @@
                     <el-text class="mx-1 title-text" size="large" tag="b">{{ item.title }}</el-text>
                   </el-col>
                   <el-col style="margin-top: 5px; flex-grow: 1">
-                    <el-text class="mx-1 content-text" size="large" tag="p">{{
-                      item.content
-                    }}</el-text>
+                    <el-text class="mx-1 content-text" size="large" tag="p">{{ item.content }}</el-text>
                   </el-col>
                 </el-row>
               </el-col>
@@ -54,12 +52,7 @@
             <el-input v-model="newKnowledge.title" placeholder="请输入知识标题" />
           </el-form-item>
           <el-form-item label="内容">
-            <el-input
-              v-model="newKnowledge.content"
-              type="textarea"
-              :rows="4"
-              placeholder="请输入知识内容"
-            />
+            <el-input v-model="newKnowledge.content" type="textarea" :rows="4" placeholder="请输入知识内容" />
           </el-form-item>
           <el-form-item label="缩略图">
             <el-upload
@@ -238,7 +231,6 @@ const submitKnowledge = async () => {
   }
 
   .pagination {
-    margin-left: 20px;
     margin-bottom: 20px;
   }
 
