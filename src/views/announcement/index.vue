@@ -2,9 +2,7 @@
   <div class="announcement-container">
     <div class="operation-bar">
       <el-button type="primary" @click="openCreateDialog" v-permission="'content:announcement:add'">
-        <el-icon>
-          <Plus />
-        </el-icon>新建公告
+        <el-icon> <Plus /> </el-icon>新建公告
       </el-button>
     </div>
     <div class="card">
@@ -29,31 +27,62 @@
         </el-table-column>
         <el-table-column label="操作" width="150" fixed="right">
           <template #default="{ row }">
-            <el-button type="primary" size="small" @click="openEditDialog(row)"
-              v-permission="'content:announcement:update'">编辑</el-button>
-            <el-button type="danger" size="small" @click="handleDelete(row)"
-              v-permission="'content:announcement:delete'">删除</el-button>
+            <el-button
+              type="primary"
+              size="small"
+              @click="openEditDialog(row)"
+              v-permission="'content:announcement:update'"
+              >编辑</el-button
+            >
+            <el-button
+              type="danger"
+              size="small"
+              @click="handleDelete(row)"
+              v-permission="'content:announcement:delete'"
+              >删除</el-button
+            >
           </template>
         </el-table-column>
       </el-table>
       <div class="pagination">
-        <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[5, 10, 20]"
-          layout="sizes, prev, pager, next, total" :total="announcementTotalCount" @size-change="handleSizeChange"
-          @current-change="handleCurrentChange" />
+        <el-pagination
+          v-model:current-page="currentPage"
+          v-model:page-size="pageSize"
+          :page-sizes="[5, 10, 20]"
+          layout="sizes, prev, pager, next, total"
+          :total="announcementTotalCount"
+          @size-change="handleSizeChange"
+          @current-change="handleCurrentChange"
+        />
       </div>
     </div>
 
     <!-- 新建/编辑公告对话框 -->
-    <el-dialog v-model="dialogVisible" :title="isEdit ? '编辑公告' : '新建公告'" width="50%" :before-close="handleClose">
+    <el-dialog
+      v-model="dialogVisible"
+      :title="isEdit ? '编辑公告' : '新建公告'"
+      width="50%"
+      :before-close="handleClose"
+    >
       <el-form :model="announcementForm" label-width="80px">
         <el-form-item label="公告标题">
           <el-input v-model="announcementForm.title" placeholder="请输入公告标题" />
         </el-form-item>
         <el-form-item label="开始时间">
-          <el-date-picker v-model="announcementForm.startTime" type="datetime" placeholder="选择开始时间" />
+          <el-date-picker
+            v-model="announcementForm.startTime"
+            type="datetime"
+            placeholder="选择开始时间"
+            value-format="YYYY-MM-DD HH:mm:ss"
+          />
         </el-form-item>
         <el-form-item label="结束时间">
-          <el-date-picker v-model="announcementForm.endTime" type="datetime" placeholder="选择结束时间" />
+          <el-date-picker
+            v-model="announcementForm.endTime"
+            type="datetime"
+            placeholder="选择结束时间"
+            value-format="YYYY-MM-DD HH:mm:ss"
+          />
         </el-form-item>
       </el-form>
       <template #footer>
@@ -209,7 +238,7 @@ const handleDelete = (row: IUpdateAnnouncement) => {
     font-size: 14px;
     color: #606266;
 
-    >div {
+    > div {
       line-height: 1.5;
     }
   }

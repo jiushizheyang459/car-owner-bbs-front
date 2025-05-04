@@ -1,6 +1,7 @@
 import axios from 'axios'
-import type { AxiosInstance, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
+import type { AxiosInstance, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from 'axios'
 import type { HYRequestConfig, HYRequestInterceptors } from './type'
+import { ElMessage } from 'element-plus'
 
 class HYRequest {
   instance: AxiosInstance
@@ -37,6 +38,22 @@ class HYRequest {
     if (this.interceptors?.responseFailureFn) {
       this.instance.interceptors.response.use(undefined, this.interceptors.responseFailureFn)
     }
+
+    // 添加全局响应错误处理
+    this.instance.interceptors.response.use(
+      (res) => res,
+      (err) => {
+        // 处理错误信息
+        if (err.response?.data?.message) {
+          ElMessage.error(err.response.data.message)
+        } else if (err.message) {
+          ElMessage.error(err.message)
+        } else {
+          ElMessage.error('请求失败，请稍后重试')
+        }
+        return Promise.reject(err)
+      }
+    )
   }
 
   request<T = any>(config: HYRequestConfig<T>) {
@@ -59,7 +76,12 @@ class HYRequest {
           }
         })
         .catch((err) => {
-          reject(err)
+          // 如果配置了响应失败拦截器，则使用拦截器的处理
+          if (config.interceptors?.responseFailureFn) {
+            reject(config.interceptors.responseFailureFn(err))
+          } else {
+            reject(err)
+          }
         })
     })
   }

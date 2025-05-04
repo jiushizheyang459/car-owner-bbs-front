@@ -13,17 +13,10 @@
       </div>
       <div class="creator-body">
         <el-row :gutter="20">
-          <el-col
-            :span="12"
-            v-for="(item, index) in creatorItems"
-            :key="index"
-            v-permission="getButtonPermission(item)"
-          >
-            <div
-              class="creator-item"
-              :class="{ 'first-item': index === 0, 'second-item': index === 1 }"
-              @click="handleCreateClick(item)"
-            >
+          <el-col :span="12" v-for="(item, index) in creatorItems" :key="index"
+            v-permission="getButtonPermission(item)">
+            <div class="creator-item" :class="{ 'first-item': index === 0, 'second-item': index === 1 }"
+              @click="handleCreateClick(item)">
               <img :src="item.icon" alt="" />
               <p>{{ item.text }}</p>
             </div>
@@ -54,16 +47,10 @@
                 <div class="follows-head">{{ user.nickName }}</div>
                 <div class="follows-detail">你可能感兴趣</div>
               </div>
-              <el-button
-                class="follows-button"
-                :class="{ 'is-followed': followStatus[user.id] }"
-                type="text"
-                @click="handleFollowClick(user.id)"
-              >
-                <img
-                  :src="followStatus[user.id] ? 'src/assets/icon/reduction.svg' : 'src/assets/icon/add.svg'"
-                  alt=""
-                />
+              <el-button class="follows-button" :class="{ 'is-followed': followStatus[user.id] }" type="text"
+                @click="handleFollowClick(user.id)">
+                <img :src="followStatus[user.id] ? 'src/assets/icon/reduction.svg' : 'src/assets/icon/add.svg'"
+                  alt="" />
                 <span>{{ followStatus[user.id] ? '已关注' : '关注' }}</span>
               </el-button>
             </div>
@@ -81,6 +68,9 @@ import useFollowStore from '@/store/follows/follows.ts'
 import { storeToRefs } from 'pinia'
 import useAdvStore from '@/store/advertisement/advertisement.ts'
 import useLoginStore from '@/store/login/login'
+import { ElMessage } from 'element-plus'
+import { localCache } from '@/utils/cache'
+import { LOGIN_TOKEN } from '@/global/constants'
 
 // 定义创作中心的数据
 const creatorItems = ref([
@@ -127,6 +117,12 @@ const handleCreateClick = (item: any) => {
 }
 
 const handleFollowClick = async (userId: number) => {
+  const token = localCache.getCache(LOGIN_TOKEN)
+  if (!token) {
+    ElMessage.warning('请先登录')
+    router.push('/login')
+    return
+  }
   await followStore.toggleFollowAction(userId)
 }
 </script>

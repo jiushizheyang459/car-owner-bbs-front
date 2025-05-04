@@ -15,11 +15,7 @@
         </el-table-column>
         <el-table-column label="缩略图" width="120">
           <template #default="scope">
-            <div
-              v-if="scope.row.thumbnail"
-              class="thumbnail-cell"
-              @click="showPreview(scope.row.thumbnail)"
-            >
+            <div v-if="scope.row.thumbnail" class="thumbnail-cell" @click="showPreview(scope.row.thumbnail)">
               <img :src="scope.row.thumbnail" alt="缩略图" />
               <div class="preview-hint">点击查看大图</div>
             </div>

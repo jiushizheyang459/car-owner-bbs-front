@@ -20,37 +20,29 @@
       <el-button-group>
         <!-- 加粗 -->
         <el-tooltip content="加粗" placement="top">
-          <el-button
-            @click="editor?.chain().focus().toggleBold().run()"
-            :class="{ 'is-active': editor?.isActive('bold') }"
-          >
+          <el-button @click="editor?.chain().focus().toggleBold().run()"
+            :class="{ 'is-active': editor?.isActive('bold') }">
             <img src="@/assets/icon/edit-icon/bold.svg" class="icon-btn" />
           </el-button>
         </el-tooltip>
         <!-- 斜体 -->
         <el-tooltip content="斜体" placement="top">
-          <el-button
-            @click="editor?.chain().focus().toggleItalic().run()"
-            :class="{ 'is-active': editor?.isActive('italic') }"
-          >
+          <el-button @click="editor?.chain().focus().toggleItalic().run()"
+            :class="{ 'is-active': editor?.isActive('italic') }">
             <img src="@/assets/icon/edit-icon/italics.svg" class="icon-btn" />
           </el-button>
         </el-tooltip>
         <!-- 下划线 -->
         <el-tooltip content="下划线" placement="top">
-          <el-button
-            @click="editor?.chain().focus().toggleUnderline().run()"
-            :class="{ 'is-active': editor?.isActive('underline') }"
-          >
+          <el-button @click="editor?.chain().focus().toggleUnderline().run()"
+            :class="{ 'is-active': editor?.isActive('underline') }">
             <img src="@/assets/icon/edit-icon/underline.svg" class="icon-btn" />
           </el-button>
         </el-tooltip>
         <!-- 删除线 -->
         <el-tooltip content="删除线" placement="top">
-          <el-button
-            @click="editor?.chain().focus().toggleStrike().run()"
-            :class="{ 'is-active': editor?.isActive('strike') }"
-          >
+          <el-button @click="editor?.chain().focus().toggleStrike().run()"
+            :class="{ 'is-active': editor?.isActive('strike') }">
             <img src="@/assets/icon/edit-icon/stripper.svg" class="icon-btn" />
           </el-button>
         </el-tooltip>
@@ -61,26 +53,20 @@
       <!-- 标题 -->
       <el-button-group>
         <el-tooltip content="一级标题" placement="top">
-          <el-button
-            @click="editor?.chain().focus().toggleHeading({ level: 1 }).run()"
-            :class="{ 'is-active': editor?.isActive('heading', { level: 1 }) }"
-          >
+          <el-button @click="editor?.chain().focus().toggleHeading({ level: 1 }).run()"
+            :class="{ 'is-active': editor?.isActive('heading', { level: 1 }) }">
             H1
           </el-button>
         </el-tooltip>
         <el-tooltip content="二级标题" placement="top">
-          <el-button
-            @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()"
-            :class="{ 'is-active': editor?.isActive('heading', { level: 2 }) }"
-          >
+          <el-button @click="editor?.chain().focus().toggleHeading({ level: 2 }).run()"
+            :class="{ 'is-active': editor?.isActive('heading', { level: 2 }) }">
             H2
           </el-button>
         </el-tooltip>
         <el-tooltip content="三级标题" placement="top">
-          <el-button
-            @click="editor?.chain().focus().toggleHeading({ level: 3 }).run()"
-            :class="{ 'is-active': editor?.isActive('heading', { level: 3 }) }"
-          >
+          <el-button @click="editor?.chain().focus().toggleHeading({ level: 3 }).run()"
+            :class="{ 'is-active': editor?.isActive('heading', { level: 3 }) }">
             H3
           </el-button>
         </el-tooltip>
@@ -116,10 +102,8 @@
         </el-tooltip>
         <!-- 插入引用 -->
         <el-tooltip content="插入引用" placement="top">
-          <el-button
-            @click="editor?.chain().focus().toggleBlockquote().run()"
-            :class="{ 'is-active': editor?.isActive('quote') }"
-          >
+          <el-button @click="editor?.chain().focus().toggleBlockquote().run()"
+            :class="{ 'is-active': editor?.isActive('quote') }">
             <img src="@/assets/icon/edit-icon/quote.svg" class="icon-btn" />
           </el-button>
         </el-tooltip>

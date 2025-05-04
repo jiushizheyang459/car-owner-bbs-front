@@ -3,6 +3,7 @@ export interface IAdvertisement {
   title: string
   content: string
   img: string
+  priority: number
   description: string
   link: string
   status: number

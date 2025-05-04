@@ -21,7 +21,7 @@
     <div class="info">
       <el-dropdown>
         <span class="user-info">
-          <el-avatar :size="30" :src="userInfo?.avatar || defaultAvatar"></el-avatar>
+          <el-avatar :size="30" shape="circle" :src="userInfo?.avatar || defaultAvatar"></el-avatar>
           <span class="name">{{ nickName }}</span>
         </span>
         <template #dropdown>
@@ -75,7 +75,7 @@ import type { FormInstance } from 'element-plus'
 import UpdatePasswordDialog from './UpdatePasswordDialog.vue'
 
 // 设置为未登录状态的默认值
-const defaultAvatar = '' // 空字符串会使用Element Plus的默认头像
+const defaultAvatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png' // 空字符串会使用Element Plus的默认头像
 const userInfo = ref<IUserInfo | null>(null)
 
 // 获取用户store
@@ -204,6 +204,8 @@ async function handleUpdatePasswordConfirm(form: IUpdatePassword) {
 
     .name {
       margin-left: 5px;
+      display: inline-block;
+      white-space: nowrap;
     }
   }
 }
@@ -223,5 +225,11 @@ async function handleUpdatePasswordConfirm(form: IUpdatePassword) {
   display: flex;
   justify-content: flex-end;
   gap: 10px;
+}
+
+// 强制设置头像为圆形
+:deep(.el-avatar) {
+  border-radius: 50% !important;
+  overflow: hidden;
 }
 </style>

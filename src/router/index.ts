@@ -2,6 +2,10 @@
 import { createRouter, createWebHashHistory } from 'vue-router'
 import { localCache } from '@/utils/cache.ts'
 import { LOGIN_TOKEN } from '@/global/constants.ts'
+import { ElMessage } from 'element-plus'
+
+// 需要登录才能访问的路由
+const requireAuthRoutes = ['/article/editor', '/article/draft', '/user/userInfo']
 
 const router = createRouter({
   // history: createWebHistory(import.meta.env.BASE_URL),
@@ -117,6 +121,14 @@ const router = createRouter({
 //导航守卫
 router.beforeEach((to, from) => {
   const token = localCache.getCache(LOGIN_TOKEN)
+
+  // 检查是否需要登录
+  if (requireAuthRoutes.includes(to.path) && !token) {
+    ElMessage.warning('请先登录')
+    return '/login'
+  }
+
+  // 如果是访问主页面且未登录，重定向到登录页
   if (to.path === '/main' && !token) {
     return '/login'
   }

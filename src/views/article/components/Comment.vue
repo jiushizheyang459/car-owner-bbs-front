@@ -58,11 +58,15 @@
 
 <script setup lang="ts">
 import { ref, onMounted, computed } from 'vue'
+import { useRouter } from 'vue-router'
 import useCommentStore from '@/store/comment/comment'
 import { storeToRefs } from 'pinia'
 import useLoginStore from '@/store/login/login'
 import useArticleStore from '@/store/article/article'
 import CommentItem from './CommentItem.vue'
+import { ElMessage } from 'element-plus'
+import { localCache } from '@/utils/cache'
+import { LOGIN_TOKEN } from '@/global/constants'
 
 // 默认头像
 const defaultAvatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
@@ -71,6 +75,7 @@ const props = defineProps<{
   articleId: number
 }>()
 
+const router = useRouter()
 const commentStore = useCommentStore()
 const loginStore = useLoginStore()
 const articleStore = useArticleStore()
@@ -101,21 +106,30 @@ const fetchComments = async () => {
 
 // 提交评论
 const handleSubmitComment = async () => {
-  if (!commentContent.value.trim()) {
+  const token = localCache.getCache(LOGIN_TOKEN)
+  if (!token) {
+    ElMessage.warning('请先登录')
+    router.push('/login')
     return
   }
 
-  const commentData = {
-    type: 0,
-    articleId: props.articleId,
-    rootId: -1,
-    content: commentContent.value,
-    toCommentUserId: -1,
-    toCommentId: -1
+  if (!commentContent.value.trim()) {
+    ElMessage.warning('请输入评论内容')
+    return
   }
 
-  await commentStore.addCommentAction(commentData)
-  commentContent.value = ''
+  try {
+    await commentStore.addCommentAction({
+      articleId: props.articleId,
+      content: commentContent.value
+    })
+    commentContent.value = ''
+    ElMessage.success('评论成功')
+    // 刷新评论列表
+    await commentStore.getCommentListAction(props.articleId)
+  } catch (error) {
+    ElMessage.error('评论失败，请稍后重试')
+  }
 }
 
 // 处理回复

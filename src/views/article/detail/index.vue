@@ -6,10 +6,8 @@
       <span>发布时间: {{ articleDetail?.createTime }}</span>
       <span>浏览量: {{ articleDetail?.viewCount }}</span>
       <span class="save-action" @click="toggleSave">
-        <img
-          :src="articleDetail?.saveFlag ? 'src/assets/icon/save-fill.svg' : 'src/assets/icon/save.svg'"
-          class="action-icon"
-        />
+        <img :src="articleDetail?.saveFlag ? 'src/assets/icon/save-fill.svg' : 'src/assets/icon/save.svg'"
+          class="action-icon" />
       </span>
     </div>
     <div class="article-content prose" v-html="articleDetail?.content"></div>
@@ -18,10 +16,8 @@
     <div class="article-actions">
       <div class="like-container">
         <div class="like-button" @click="toggleLike">
-          <img
-            :src="articleDetail?.likeFlag ? 'src/assets/icon/like-fill.svg' : 'src/assets/icon/like.svg'"
-            class="action-icon large-icon"
-          />
+          <img :src="articleDetail?.likeFlag ? 'src/assets/icon/like-fill.svg' : 'src/assets/icon/like.svg'"
+            class="action-icon large-icon" />
           <span :class="articleDetail?.likeFlag ? 'likeNum' : ''">{{ articleDetail?.likeCount }}</span>
         </div>
       </div>
@@ -34,15 +30,18 @@
 
 <script setup lang="ts">
 import { onMounted } from 'vue'
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import useArticleStore from '@/store/article/article'
 import useLikeStore from '@/store/like/like'
 import useSaveStore from '@/store/save/save'
 import { storeToRefs } from 'pinia'
 import Comment from '../components/Comment.vue'
 import { ElMessage } from 'element-plus'
+import { localCache } from '@/utils/cache'
+import { LOGIN_TOKEN } from '@/global/constants'
 
 const route = useRoute()
+const router = useRouter()
 const articleStore = useArticleStore()
 const likeStore = useLikeStore()
 const saveStore = useSaveStore()
@@ -64,6 +63,13 @@ onMounted(async () => {
 
 // 点赞功能
 const toggleLike = async () => {
+  const token = localCache.getCache(LOGIN_TOKEN)
+  if (!token) {
+    ElMessage.warning('请先登录')
+    router.push('/login')
+    return
+  }
+
   if (!articleDetail.value) return
 
   const articleId = Number(route.params.id)
@@ -80,6 +86,13 @@ const toggleLike = async () => {
 
 // 收藏功能
 const toggleSave = async () => {
+  const token = localCache.getCache(LOGIN_TOKEN)
+  if (!token) {
+    ElMessage.warning('请先登录')
+    router.push('/login')
+    return
+  }
+
   if (!articleDetail.value) return
 
   const articleId = Number(route.params.id)

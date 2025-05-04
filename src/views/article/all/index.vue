@@ -14,10 +14,8 @@
           <div class="left-actions">
             <ul>
               <li @click="toggleLike(item)">
-                <img
-                  :src="item.likeFlag ? 'src/assets/icon/like-fill.svg' : 'src/assets/icon/like.svg'"
-                  class="action-icon"
-                />
+                <img :src="item.likeFlag ? 'src/assets/icon/like-fill.svg' : 'src/assets/icon/like.svg'"
+                  class="action-icon" />
                 <span :class="item.likeFlag ? 'likeNum' : ''">{{ item.likeCount }}</span>
               </li>
               <li>
@@ -33,10 +31,8 @@
           <div class="right-actions">
             <ul>
               <li @click="toggleSave(item)">
-                <img
-                  :src="item.saveFlag ? 'src/assets/icon/save-fill.svg' : 'src/assets/icon/save.svg'"
-                  class="action-icon"
-                />
+                <img :src="item.saveFlag ? 'src/assets/icon/save-fill.svg' : 'src/assets/icon/save.svg'"
+                  class="action-icon" />
               </li>
               <!--              <li>-->
               <!--                <img src="@/assets/icon/share.svg" />-->
@@ -47,15 +43,9 @@
       </li>
     </ul>
     <div class="pagination">
-      <el-pagination
-        v-model:current-page="currentPage"
-        v-model:page-size="pageSize"
-        :page-sizes="[5, 10, 20]"
-        layout="sizes, prev, pager, next, total"
-        :total="articleTotalCount"
-        @size-change="handleSizeChange"
-        @current-change="handleCurrentChange"
-      />
+      <el-pagination v-model:current-page="currentPage" v-model:page-size="pageSize" :page-sizes="[5, 10, 20]"
+        layout="sizes, prev, pager, next, total" :total="articleTotalCount" @size-change="handleSizeChange"
+        @current-change="handleCurrentChange" />
     </div>
   </div>
 </template>
@@ -68,6 +58,9 @@ import useLikeStore from '@/store/like/like.ts'
 import useSaveStore from '@/store/save/save.ts'
 import { storeToRefs } from 'pinia'
 import { stripHtml } from '@/utils/htmlUtils'
+import { ElMessage } from 'element-plus'
+import { localCache } from '@/utils/cache'
+import { LOGIN_TOKEN } from '@/global/constants'
 
 //region 分页部分
 const currentPage = ref(1)
@@ -108,6 +101,12 @@ onMounted(() => {
 
 //region 路由部分
 const toggleLike = async (item: any) => {
+  const token = localCache.getCache(LOGIN_TOKEN)
+  if (!token) {
+    ElMessage.warning('请先登录')
+    router.push('/login')
+    return
+  }
   await likeStore.toggleLikeAction(item.id)
   // 更新文章列表中的点赞状态和数量
   item.likeFlag = likeStatus.value[item.id]
@@ -115,6 +114,12 @@ const toggleLike = async (item: any) => {
 }
 
 const toggleSave = async (item: any) => {
+  const token = localCache.getCache(LOGIN_TOKEN)
+  if (!token) {
+    ElMessage.warning('请先登录')
+    router.push('/login')
+    return
+  }
   if (item.saveFlag) {
     // 如果已经收藏，则取消收藏
     const success = await saveStore.deleteSaveAction(item.id)
@@ -142,11 +147,11 @@ function openDetail(item: any) {
   display: flex;
   flex-wrap: wrap;
 
-  > ul {
+  >ul {
     width: 100%;
     padding: 20px;
 
-    > li {
+    >li {
       border-bottom: 1px solid #eee;
       padding: 10px 0;
     }

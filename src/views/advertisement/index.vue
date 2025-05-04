@@ -28,6 +28,11 @@
             <span v-else>暂无广告图片</span>
           </template>
         </el-table-column>
+        <el-table-column prop="priority" label="广告优先级" width="100">
+          <template #default="{ row }">
+            {{ row.priority || '暂无广告优先级' }}
+          </template>
+        </el-table-column>
         <el-table-column prop="link" label="跳转链接" min-width="200">
           <template #default="{ row }">
             <el-link v-if="row.link" type="primary" :href="row.link" target="_blank">{{ row.link }}</el-link>
@@ -123,10 +128,20 @@
           </el-upload>
         </el-form-item>
         <el-form-item label="开始时间">
-          <el-date-picker v-model="advertisementForm.startTime" type="datetime" placeholder="选择开始时间" />
+          <el-date-picker
+            v-model="advertisementForm.startTime"
+            type="datetime"
+            placeholder="选择开始时间"
+            value-format="YYYY-MM-DD HH:mm:ss"
+          />
         </el-form-item>
         <el-form-item label="结束时间">
-          <el-date-picker v-model="advertisementForm.endTime" type="datetime" placeholder="选择结束时间" />
+          <el-date-picker
+            v-model="advertisementForm.endTime"
+            type="datetime"
+            placeholder="选择结束时间"
+            value-format="YYYY-MM-DD HH:mm:ss"
+          />
         </el-form-item>
         <el-form-item label="状态">
           <el-switch
@@ -161,7 +176,7 @@ import { ElIcon, ElMessage, ElMessageBox } from 'element-plus'
 import { Plus } from '@element-plus/icons-vue'
 import { storeToRefs } from 'pinia'
 import useAdvertisementStore from '@/store/advertisement/advertisement'
-import { uploadImage } from '@/service/information/information'
+import useUploadStore from '@/store/upload/upload'
 import type { IAddAdvertisement, IUpdateAdvertisement } from '@/store/advertisement/type'
 import { formatDate } from '@/utils/date'
 
@@ -185,6 +200,7 @@ function fetchAdvertisementListData() {
 //endregion
 
 const advertisementStore = useAdvertisementStore()
+const uploadStore = useUploadStore()
 const { advertisementList, advertisementTotalCount } = storeToRefs(advertisementStore)
 
 // 初始化加载数据
@@ -249,15 +265,15 @@ const handleImageChange = async (file: any) => {
       message: '图片上传中...'
     })
 
-    const result = await uploadImage(file.raw)
-    advertisementForm.img = result.data.data
-
-    ElMessage({
-      type: 'success',
-      message: '图片上传成功'
-    })
+    const imageUrl = await uploadStore.uploadImageAction(file.raw)
+    if (imageUrl) {
+      advertisementForm.img = imageUrl
+      ElMessage({
+        type: 'success',
+        message: '图片上传成功'
+      })
+    }
   } catch (error) {
-    console.error('图片上传失败:', error)
     ElMessage({
       type: 'error',
       message: '图片上传失败，请重试'
@@ -266,10 +282,10 @@ const handleImageChange = async (file: any) => {
 }
 
 const submitAdvertisement = async () => {
-  if (!advertisementForm.title || !advertisementForm.content) {
+  if (!advertisementForm.title) {
     ElMessage({
       type: 'warning',
-      message: '请填写完整信息'
+      message: '请填写广告标题'
     })
     return
   }
