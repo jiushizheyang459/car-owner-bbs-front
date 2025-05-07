@@ -59,8 +59,14 @@
                   </el-col>
                   <el-col :span="6">
                     <div style="display: flex; align-items: center; justify-content: flex-end">
-                      <el-image style="width: 24px; height: 24px" src="src/assets/icon/like.svg" fit="fill" />
-                      <span style="font-size: 12px">{{ item.favour }}</span>
+                      <div class="like-button" @click="toggleLike(item)">
+                        <el-image
+                          style="width: 24px; height: 24px"
+                          :src="item.likeFlag ? 'src/assets/icon/like-fill.svg' : 'src/assets/icon/like.svg'"
+                          fit="fill"
+                        />
+                        <span :class="item.likeFlag ? 'likeNum' : ''" style="font-size: 12px">{{ item.favour }}</span>
+                      </div>
                     </div>
                   </el-col>
                 </el-row>
@@ -75,21 +81,49 @@
 
 <script setup lang="ts">
 import useArticleStore from '@/store/article/article.ts'
+import useLikeStore from '@/store/like/like'
 import { storeToRefs } from 'pinia'
 import { useRouter } from 'vue-router'
 import { stripHtml } from '@/utils/htmlUtils'
+import { ElMessage } from 'element-plus'
+import { localCache } from '@/utils/cache'
+import { LOGIN_TOKEN } from '@/global/constants'
+import type { INewArticle } from '@/store/article/type'
 
 const articleStore = useArticleStore()
+const likeStore = useLikeStore()
+const router = useRouter()
+
 articleStore.getHotArticleListAction()
 articleStore.getNewArticleListAction()
 
 const { hotArticleList } = storeToRefs(articleStore)
 const { newArticleList } = storeToRefs(articleStore)
 
-const router = useRouter()
-
 function openDetail() {
   router.push(`/article/all`)
+}
+
+// 点赞功能
+const toggleLike = async (item: INewArticle) => {
+  const token = localCache.getCache(LOGIN_TOKEN)
+  if (!token) {
+    ElMessage.warning('请先登录')
+    router.push('/login')
+    return
+  }
+
+  const articleId = item.id
+  await likeStore.toggleLikeAction(articleId)
+
+  // 更新文章列表中的点赞状态和数量
+  if (!item.likeFlag) {
+    item.likeFlag = true
+    item.favour++
+  } else {
+    item.likeFlag = false
+    item.favour--
+  }
 }
 </script>
 
@@ -175,6 +209,24 @@ function openDetail() {
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .like-button {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      padding: 5px 10px;
+      border-radius: 4px;
+      transition: background-color 0.3s ease;
+
+      &:hover {
+        background-color: rgba(18, 150, 219, 0.1);
+      }
+
+      .likeNum {
+        color: #1296db;
+        font-weight: bold;
+      }
     }
   }
 }

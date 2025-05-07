@@ -1,5 +1,5 @@
 <template>
-  <div class="comment-item">
+  <div class="comment-item" :id="`comment-${comment.id}`">
     <div class="comment-header">
       <div class="comment-author">
         <el-avatar :size="32" :src="comment.avatar || defaultAvatar" />
@@ -60,6 +60,20 @@ defineEmits<{
 
   &:last-child {
     border-bottom: none;
+  }
+
+  &.highlight-comment {
+    animation: highlight 3s ease;
+  }
+}
+
+@keyframes highlight {
+  0% {
+    background-color: rgba(64, 158, 255, 0.1);
+  }
+
+  100% {
+    background-color: transparent;
   }
 }
 

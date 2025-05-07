@@ -46,6 +46,7 @@ export interface INewArticle {
   thumbnail: string
   viewCount: number
   favour: number
+  likeFlag?: boolean
 }
 
 export interface IDraftArticle {

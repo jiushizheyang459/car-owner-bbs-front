@@ -40,7 +40,6 @@ import { localCache } from '@/utils/cache.ts'
 const activeName = ref('account')
 const isRemPwd = ref<boolean>(localCache.getCache('isRemPwd') ?? false)
 watch(isRemPwd, (newValue) => {
-  console.log(newValue)
   if (newValue === true) {
     localCache.setCache('isRemPwd', newValue)
   } else if (newValue === false) {
@@ -52,8 +51,6 @@ const accountRef = ref<InstanceType<typeof PaneAccount>>()
 function handleLoginBtnClick() {
   if (activeName.value === 'account') {
     accountRef.value?.loginAction(isRemPwd.value)
-  } else {
-    console.log('用户在进行手机登录')
   }
 }
 </script>

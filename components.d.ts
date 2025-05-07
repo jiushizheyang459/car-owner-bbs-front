@@ -57,6 +57,7 @@ declare module 'vue' {
     ElUpload: typeof import('element-plus/es')['ElUpload']
     GlobalHeader: typeof import('./src/components/GlobalHeader.vue')['default']
     HeaderInfo: typeof import('./src/components/HeaderInfo.vue')['default']
+    NotificationList: typeof import('./src/components/NotificationList.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     UpdatePasswordDialog: typeof import('./src/components/UpdatePasswordDialog.vue')['default']

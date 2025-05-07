@@ -6,8 +6,8 @@
           <Message />
         </el-icon>
       </span>
-      <span>
-        <span class="dot"></span>
+      <span @click="handleNotificationClick">
+        <span class="dot" v-if="notificationStore.unreadCount > 0"></span>
         <el-icon>
           <ChatDotRound />
         </el-icon>
@@ -57,6 +57,7 @@
   </div>
 
   <update-password-dialog v-model:visible="updatePasswordDialogVisible" @confirm="handleUpdatePasswordConfirm" />
+  <notification-list v-model="notificationDialogVisible" />
 </template>
 
 <script setup lang="ts">
@@ -65,14 +66,20 @@ import { accountLogoutRequest } from '@/service/login/logout.ts'
 import { localCache } from '@/utils/cache.ts'
 import router from '@/router'
 import { LOGIN_TOKEN, USER_INFO, MENUS } from '@/global/constants.ts'
-import { ref, onMounted, computed, watch, reactive } from 'vue'
+import { ref, onMounted, computed, watch, reactive, onUnmounted } from 'vue'
 import type { IUserInfo } from '@/store/login/type'
 import type { IUpdatePassword } from '@/store/user/type'
 import useUserStore from '@/store/user/user.ts'
+import useNotificationStore from '@/store/notification/notification.ts'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus'
 import type { FormInstance } from 'element-plus'
 import UpdatePasswordDialog from './UpdatePasswordDialog.vue'
+import NotificationList from './NotificationList.vue'
+import { Client } from '@stomp/stompjs'
+
+// WebSocket相关
+const stompClient = ref<Client | null>(null)
 
 // 设置为未登录状态的默认值
 const defaultAvatar = 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png' // 空字符串会使用Element Plus的默认头像
@@ -80,6 +87,7 @@ const userInfo = ref<IUserInfo | null>(null)
 
 // 获取用户store
 const userStore = useUserStore()
+const notificationStore = useNotificationStore()
 const { userInfo: storeUserInfo } = storeToRefs(userStore)
 
 // 监听store中的userInfo变化
@@ -97,6 +105,11 @@ watch(
 // 组件挂载时从localCache中获取用户信息
 onMounted(() => {
   userInfo.value = localCache.getCache(USER_INFO)
+  initWebSocket()
+  // 获取初始未读通知数
+  if (isLoggedIn.value) {
+    notificationStore.getUnreadCountAction()
+  }
 })
 
 // 判断用户是否登录
@@ -151,6 +164,99 @@ async function handleUpdatePasswordConfirm(form: IUpdatePassword) {
     ElMessage.error('密码修改失败')
   }
 }
+
+// 通知对话框
+const notificationDialogVisible = ref(false)
+
+// 处理通知图标点击
+function handleNotificationClick() {
+  notificationDialogVisible.value = true
+}
+
+// 初始化WebSocket连接
+const initWebSocket = () => {
+  const token = localCache.getCache(LOGIN_TOKEN)
+  if (!token || !userInfo.value) return
+
+  // 如果已经有连接，先断开
+  disconnectWebSocket()
+
+  try {
+    console.log('正在初始化WebSocket连接...')
+
+    const client = new Client({
+      brokerURL: `ws://${window.location.host}/ws`,
+      connectHeaders: {
+        Authorization: `Bearer ${token}`
+      },
+      debug: function (str) {
+        console.log('WebSocket debug:', str)
+      },
+      reconnectDelay: 5000,
+      heartbeatIncoming: 4000,
+      heartbeatOutgoing: 4000
+    })
+
+    client.onConnect = () => {
+      console.log('WebSocket连接成功, 用户ID:', userInfo.value?.id)
+
+      // 订阅用户通知
+      client.subscribe(`/user/${userInfo.value?.id}/notification`, (message) => {
+        try {
+          const notification = JSON.parse(message.body)
+        } catch (error) {
+          console.error('解析通知消息失败:', error)
+        }
+      })
+
+      // 订阅未读通知数
+      client.subscribe(`/user/${userInfo.value?.id}/unread-count`, (message) => {
+        try {
+          const count = parseInt(message.body)
+          if (!isNaN(count)) {
+            notificationStore.updateUnreadCount(count)
+          }
+        } catch (error) {
+          console.error('处理未读数量失败:', error)
+        }
+      })
+    }
+
+    client.onStompError = (frame) => {
+      console.error('STOMP协议错误:', frame)
+    }
+
+    console.log('激活WebSocket连接...')
+    client.activate()
+    stompClient.value = client
+  } catch (error) {
+    console.error('初始化WebSocket失败:', error)
+  }
+}
+
+// 断开WebSocket连接
+const disconnectWebSocket = () => {
+  if (stompClient.value) {
+    stompClient.value.deactivate()
+    stompClient.value = null
+  }
+}
+
+// 监听登录状态变化
+watch(isLoggedIn, (newVal) => {
+  if (newVal) {
+    initWebSocket()
+    notificationStore.getUnreadCountAction()
+  } else {
+    disconnectWebSocket()
+    notificationStore.updateUnreadCount(0)
+  }
+})
+
+// 组件卸载时断开连接
+onUnmounted(() => {
+  disconnectWebSocket()
+})
 </script>
 
 <style lang="less" scoped>

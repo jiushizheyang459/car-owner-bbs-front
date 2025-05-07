@@ -13,10 +13,17 @@
       </div>
       <div class="creator-body">
         <el-row :gutter="20">
-          <el-col :span="12" v-for="(item, index) in creatorItems" :key="index"
-            v-permission="getButtonPermission(item)">
-            <div class="creator-item" :class="{ 'first-item': index === 0, 'second-item': index === 1 }"
-              @click="handleCreateClick(item)">
+          <el-col
+            :span="12"
+            v-for="(item, index) in creatorItems"
+            :key="index"
+            v-permission="getButtonPermission(item)"
+          >
+            <div
+              class="creator-item"
+              :class="{ 'first-item': index === 0, 'second-item': index === 1 }"
+              @click="handleCreateClick(item)"
+            >
               <img :src="item.icon" alt="" />
               <p>{{ item.text }}</p>
             </div>
@@ -47,10 +54,16 @@
                 <div class="follows-head">{{ user.nickName }}</div>
                 <div class="follows-detail">你可能感兴趣</div>
               </div>
-              <el-button class="follows-button" :class="{ 'is-followed': followStatus[user.id] }" type="text"
-                @click="handleFollowClick(user.id)">
-                <img :src="followStatus[user.id] ? 'src/assets/icon/reduction.svg' : 'src/assets/icon/add.svg'"
-                  alt="" />
+              <el-button
+                class="follows-button"
+                :class="{ 'is-followed': followStatus[user.id] }"
+                type="text"
+                @click="handleFollowClick(user.id)"
+              >
+                <img
+                  :src="followStatus[user.id] ? 'src/assets/icon/reduction.svg' : 'src/assets/icon/add.svg'"
+                  alt=""
+                />
                 <span>{{ followStatus[user.id] ? '已关注' : '关注' }}</span>
               </el-button>
             </div>
@@ -104,7 +117,6 @@ const router = useRouter()
 
 // 根据按钮类型返回对应的权限标识
 const getButtonPermission = (item: any): string => {
-  console.log('item.permission', item.permission)
   return item.permission
 }
 

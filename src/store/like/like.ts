@@ -12,9 +12,6 @@ const useLikeStore = defineStore('like', {
   actions: {
     async toggleLikeAction(articleId: number) {
       const loginStore = useLoginStore()
-      console.log('loginStore.userInfo', loginStore.userInfo)
-      console.log('localCache', localCache)
-      console.log('localCache.userInfo', localCache.getCache('userInfo'))
       if (!loginStore.userInfo) {
         ElMessage.warning('请先登录')
         return

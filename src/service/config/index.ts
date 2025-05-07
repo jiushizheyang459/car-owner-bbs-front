@@ -1,4 +1,5 @@
-export const BASE_URL = 'http://localhost:7777'
+// 使用代理URL，这样请求会通过代理发送到实际服务器
+export const BASE_URL = '/api'
 export const TIME_OUT = 10000
 
 // let BASE_URL = ''
